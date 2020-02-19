@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Incidents Result{% endblock %}
+
+{% block headers %}
+<style type="text/css">
+  .off {
+     background-color: #CCC;
+  }
+</style>
+{% endblock headers %}
+
+{% block content %}
+<table>
+<tr><th>Category</th><th>Type</th><th>Updated</th><th>Severity</th><th>City</th><th>State</th><th>County</th></tr>
+{% for row in objs %}
+<tr{% if row.off %} class="off"{% endif %}>
+  <td>{{row.incidentcategory}}</td>
+  <td>{{row.incidenttype}}</td>
+  <td>{{row.updateddate}}</td>
+  <td>{{row.severity}}</td>
+  <td>{{row.city|escape}}</td>
+  <td>{{row.stateprovince}}</td>
+  <td>{{row.county}}</td>
+  <td>
+    <form action="./details" method="get">
+      <div>
+	<input type="hidden" name="incactid" value="{{row.incactivityid}}" /> 
+{#	<input type="hidden" name="incactid" value="{{row.incactivityid|date:"d-m-Y"}} {{row.incactivityid|time:"H:i:s"}}" /> #}
+	<input type="submit" value="Details" />
+      </div>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock content %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Incident Details{% endblock %}
+
+{% block headers %}
+{% endblock headers %}
+
+{% block content %}
+{% if item %}
+<dl>
+  <dt>Date Created</dt>
+  <dd>{{item.createddate|date:"m/d/Y h:i A"}}</dd>
+
+  <dt>Date Expired</dt>
+  <dd>{{item.itemexpirationdate|date:"m/d/Y h:i A"}}</dd>
+
+{% if item.itemtitle %}
+  <dt>AB/GFP</dt>
+  <dd>{{"AB"}}s</dd>
+  <dt>Title</dt>
+  <dd>{{item.itemtitle|escape}}</dd>
+  <dt>Item Summary</dt>
+  <dd>{{item.itemsummary|escape}}</dd>
+  <dt>Item Body>
+  <dd>{{item.itemtext}} </dd>
+{% else %}
+  <dt>AB/GFP</dt>
+  <dd>{{"GFP"}}s</dd>
+  <dt>Title</dt>
+  <dd>{{item.synopsis|escape}}</dd>
+  <dt>Item Summary</dt>
+  <dd>{{item.itemtext|escape}}</dd>
+{% endif %}
+
+  <dt>Severity</dt>
+  <dd>{{item.itemsignificance|escape}}</dd>
+
+  <dt>Special Event</dt>
+  <dd>{{item.event|escape}}</dd>
+
+  <dt>Country</dt>
+  <dd>{{item.country|escape}}</dd>
+  
+  <dt>Secondary Locations</dt>
+  <dd>{{item.itemcountryline|escape}}</dd>
+
+  <dt>City</dt>
+  <dd>{{item.city|escape}}</dd>
+
+  <dt>Latitute</dt>
+  <dd>{{item.latitude|escape}}</dd>
+
+  <dt>Longitude</dt>
+  <dd>{{item.longitude|escape}}</dd>
+
+  <dt>Region</dt>
+  <dd>{{item.region|escape}}</dd>
+  
+
+  <dt>Actors</dt>
+  <dd>  
+  {% for actor in actors %}
+   {{actor.ACTORNAME}}</br>
+  {% endfor %}
+  </dd> 
+
+  <dt>Categories</dt>
+  <dd>  
+  {% for category in categories %}
+   {{category.FULLYQUALIFIED}}</br>
+  {% endfor %}
+  </dd> 
+  
+{% endif %}
+{% endblock content %}

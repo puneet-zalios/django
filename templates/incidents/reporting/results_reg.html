@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Regional Results{% endblock %}
+
+{% block headers %}
+<style type="text/css">
+  .off {
+     background-color: #CCC;
+  }
+</style>
+
+<script type="text/javascript">
+$j(document).ready(function() {
+  $j('#refine_link').click(function(){
+    $j('#criteria_form').submit();
+  })
+});
+</script>
+{% endblock headers %}
+
+{% block sidebar %}
+<li><a href="#" id="refine_link">Refine Current Search</a></li>
+<form name="mainForm" method="post" action="/django/reporting/reg/" id='criteria_form'>
+  <input type="hidden" name="search_criteria" value="{{ criteria }}"/>
+  <input type="hidden" name="refine" value="yes"/>
+</form>
+{% endblock sidebar %}
+
+{% block content %}
+<dl>
+  <dt>Total Reports</dt><dd>{{ total_rows }}</dd>
+</dl>
+{% if objs %}
+<table>
+<tr><th>Date Created</th><th>Severity</th><th>Country</th><th>Secondary Locations</th><th>GFP/AB</th><th>Title</th></tr>
+{% for row in objs %}
+<tr{% if row.off %} class="off"{% endif %}>
+  <td>{{row.createddate|date:"m/d/Y h:i A"}}</td>
+  <td>{{row.itemsignificance}}</td>
+  <td>{{row.country}}</td>
+  <td>{{row.itemcountryline|escape}}</td>
+  
+{% if row.itemtype == 'SR' or row.itemtype == 'SEB'%}
+	  <td>
+		{{row.itemtype}}
+	  </td>	
+	  <td>{{row.itemtitle|escape}}</td>
+	<td>
+    <form action="./details_vw" method="get">
+      <div>
+	<input type="hidden" name="itemid" value="{{row.itemid}}" />
+	<input type="submit" value="Details" />
+      </div>
+    </form>
+  </td>
+	  
+{% else %}
+  
+	{% if row.itemtitle %}
+	  <td>
+		{{"AB"}}s
+	  </td>
+	  <td>{{row.itemtitle|escape}}</td>
+	{% else %}
+	  <td>
+		{{"GFP"}}
+	  </td>	
+	  <td>{{row.synopsis|escape}}</td>
+	{% endif %}
+	<td>
+      <form action="./details" method="get">
+      <div>
+	  <input type="hidden" name="itemid" value="{{row.itemid}}" />
+	  <input type="submit" value="Details" />
+      </div>
+      </form>
+    </td>
+{% endif %}
+
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% endblock content %}

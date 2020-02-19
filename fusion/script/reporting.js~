@@ -1,0 +1,180 @@
+var date_params = ['dateoc', 'update'];
+var addButton = null;
+var rowCounter = 0;
+var ids = [];
+
+function toggleNot(span) {
+    var weight = span.style.getPropertyValue('font-weight');
+    var input = span.getElementsByTagName('input')[0];
+    if (weight === 'bold') {
+	span.style.removeProperty('font-weight');
+	span.style.setProperty('color', 'grey', '');
+	input.setAttribute('value', '0');
+    } else {
+	span.style.setProperty('font-weight', 'bold', '');
+	span.style.setProperty('color', 'red', '');
+	input.setAttribute('value', '1');
+    }
+}
+
+function updateRowList() {
+    var el = document.getElementById('rowlist');
+    el.setAttribute('value', ids.join(','));
+}
+
+function addID(id) {
+    ids.push(id);
+    updateRowList();
+}
+
+function removeID(id) {
+    var i = ids.indexOf(id);
+    ids.splice(i, 1);
+    updateRowList();
+}
+
+function addRow(rowRef) {
+    var row = document.createElement('p');
+    row.className = 'searchline';
+    row.id = rowCounter.toString();
+    rowCounter++;
+    addID(row.id);
+
+    row.appendChild(createCatSelect(row.id, row));
+    row.appendChild(createNot(row.id));
+    row.appendChild(createOpsSelect(row.id, row));
+    row.appendChild(createField(row.id));
+    row.appendChild(createAddButton(row));
+
+    var form = document.getElementById('incsearch');
+
+    if (form.getElementsByTagName('p').length != 0) {
+	row.appendChild(createDeleteButton(row));
+    }
+
+    if (rowRef == null) {
+	form.insertBefore(row, document.getElementById('submit'));
+    } else {
+	for (var i=0; i<form.childNodes.length; i++) {
+	    if (form.childNodes[i] == rowRef  
+		  && (i+1) < form.childNodes.length) {
+		// Since the submit div is last, it should always insert
+		form.insertBefore(row, form.childNodes[i+1]);
+	    }
+	}
+    }
+}
+
+function createAddButton(row) {
+    var plus = createInput(null, 'button', 'plus', '+');
+    plus.addEventListener('click', function() {addRow(row);}, false);
+    return plus;
+}
+
+function removeRow(row) {
+    removeID(row.id);
+    row.parentNode.removeChild(row);
+}
+
+function createDeleteButton(row) {
+    var deleteButton = createInput(null, 'button', 'minus', '-');
+    var delEvent = function() {
+	removeRow(row);
+    };
+    deleteButton.addEventListener('click', delEvent, false);
+    return deleteButton;
+}
+
+function createField(id) {
+    var field = createInput(id, 'text', 'field', null);
+    return field;
+}
+
+function createOpsSelect(id, row) {
+    return createSelect(id, 'op', op_list, null);
+}
+
+function createNot(id) {
+    var span = document.createElement('span');
+    span.className = 'nottoggle';
+    span.style.setProperty('color', 'grey', '');
+    span.addEventListener('click', function() {toggleNot(span);}, false);
+    var over = function() {
+	span.style.setProperty('cursor', 'pointer', '');
+    };
+    span.addEventListener('mouseover', over, false);
+    var off = function() {
+	span.style.removeProperty('cursor');
+    };
+    span.addEventListener('mouseout', off, false);
+    span.appendChild(document.createTextNode('Not'));
+    span.appendChild(createNotInput(id));
+    return span;
+}
+
+function createNotInput(id) {
+    return createInput(id, 'hidden', 'not', '0');
+}
+
+function createInput(id, type, name, value) {
+    var input = document.createElement('input');
+    if (id) {
+	input.id = name + id;
+    }
+    input.setAttribute('type', type);
+    input.setAttribute('name', input.id);
+    if (value != null) {
+	input.setAttribute('value', value);
+    }
+    return input;
+}
+
+// function addDate(row) {
+//     Calendar.setup({
+// 	    inputField : 'field'+row.id,
+// 		ifFormat : '%m/%d/%Y %l:%M %P',
+// 		showsTime: true,
+// 		singleClick: true,
+// 		step: 1,
+// 		eventName: 'click',
+// 		timeFormat: '12',
+// 		});
+// }
+
+function addDate(row) {
+}
+
+function catEvent(row) {
+    return function(option) {
+	if (date_params.indexOf(option.getAttribute('value')) != -1) {
+	    addDate(row);
+	}
+    };
+}
+
+function createCatSelect(id, row) {
+    return createSelect(id, 'type', cat_list, catEvent(row));
+}
+
+function createSelect(id, name, options, event) {
+    var select = document.createElement('select');
+    select.id = name + id;
+    select.setAttribute('name', select.id);
+    for (var i=0; i<options.length; i++) {
+	select.appendChild(createOption(options[i]));
+    }
+    if (event != null) {
+	var func = function() {
+	    event(select.options[select.selectedIndex]);
+	};
+	select.addEventListener('change', func, false);
+    }
+    return select;
+}
+
+function createOption(data) {
+    var option = document.createElement('option');
+    option.setAttribute('value', data[0]);
+    option.appendChild(document.createTextNode(data[1]));
+    return option;
+}

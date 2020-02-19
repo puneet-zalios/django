@@ -1,0 +1,109 @@
+body {
+    margin: 0px;
+    background-color: #335295;
+}
+
+div#header {
+}
+
+div#side {
+    float: left;
+    width: 10%;
+    margin: 0px 1% 0px 1%;
+    border: solid red 1px;
+    background-color: white;
+    
+    text-align: center;
+    vertical-align: middle;
+}
+
+div#side ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 10px 5px 10px 5px;
+}
+
+div#side ul li {
+}
+
+div#side ul li a {
+    color: black;
+    font-size: 0.9em;
+    font-family: arial, sans-serif;
+    text-decoration: none;
+}
+
+div#side ul li a:hover {
+    text-decoration: underline;
+}
+
+div#main {
+    float: right;
+    width: 85%;
+    
+    background-color: white;
+    border: solid red 1px;
+    
+    margin: 0px 1% 0px 0%; 
+    padding: 10px 0px 10px 15px;
+    
+    font-family: Arial, sans-serif;
+    font-size: 0.85em;
+}
+
+div.field {
+    display: inline;
+    padding: 1px;
+}
+
+div.field input {
+    width: 8em;
+}
+
+div.field select {
+    margin: 0px;
+    width: 8em;
+    vertical-align: bottom;
+}
+
+span.add-list-button {
+    color: blue;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+span.add-list-button:hover {
+    cursor: pointer;
+}
+
+table tr td {
+    padding: 3px 5px 0px 5px;
+    text-align: left;
+}
+
+table tr th {
+    text-align: left;
+    padding: 3px 5px 0px 5px;
+}
+
+div#announcement {
+    font-size: 1em;
+    margin-top: 5em;
+}
+
+div#announcement h3 {
+    font-weight: normal;
+    font-size: 1.6em;
+}
+
+div#announcement ul {
+    list-style-type: none;
+}
+
+div#announcement ul li {
+    padding-left: 3em;
+    margin: 1em 0.5em 1em;
+    background-image: url(/images/asterisk.png);
+    background-position: top left;
+    background-repeat: no-repeat;
+}

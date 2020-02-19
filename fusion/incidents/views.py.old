@@ -1,0 +1,380 @@
+import csv
+import os
+from datetime import datetime
+from StringIO import StringIO
+from zipfile import ZipFile
+
+from django.db import connection
+from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import render_to_response
+from django.template import Context, Template
+from django.template.loader import get_template
+from django.views.decorators.cache import cache_page
+
+from comp import make_comp
+#from objs import Category, DateCat
+from models import IncActivity, Attachments, Facility
+
+
+# class InStr(str):
+#     def __mod__(self, d):
+#         d['field'] = '(%s)' % ', '.join(d['field'])
+#         return str.__mod__(self, d)
+
+# class ConStr(str):
+#     def __mod__(self, d):
+#         d['field'] = '%%%s%%' % d['field']
+#         return str.__mod__(self, d)
+
+
+FAC_COLS = ['facilityname', 'createdby', 'createddate', 'latitude', 'longitude',
+            'street', 'city', 'county', 'district', 'stateprovince', 'region',
+            'country', 'updatedby', 'updateddate', 'facilityid']
+
+getFacilities = lambda: Facility.objects\
+    .exclude(createdby__in=('Taylor Obitz', 'Luis Garcia'),
+             createdby__contains='DEMO')\
+    .order_by('updateddate')
+
+nonNC4Facilities = lambda: getFacilities().exclude(facilityname__contains='NC4')
+
+fac_query = """
+SELECT incidentcategory, COUNT(DISTINCT incidentid) num
+FROM fusion.incactivity
+WHERE country %s 'United States' 
+  AND createddate BETWEEN TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI')
+      AND TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI')
+  AND activitystatus <> 'ARCHIVED'
+GROUP BY incidentcategory
+ORDER BY incidentcategory
+"""
+
+# categories = {'inc' : Category('Incident Cateogry', 'incidentcategory'), 
+#               'dateoc' : DateCat('Date Occurred', 'dateoccurred'),
+#               'update' : DateCat('Updated Date', 'updateddate'), 
+#               'city' : Category('City', 'city'), 
+#               'cnty': Category('County', 'county'),
+#               'st' : Category('State', 'stateprovince'),
+#               'cntry' : Category('Country', 'country'), 
+#               'reg' : Category('Region', 'region'), 
+#               'sec' : Category('Severity', 'severity'),
+#               'intcom' : Category('Internal Comments', 'conversationlog'), 
+#               'incid' : Category('IncidentId', 'incidentid'),
+#               'incactivityid': DateCat('IncActivityID', 'incactivityid'),
+#               'inctype': Category('Incident Type', 'incidenttype'),
+# }
+
+# operators = {'eq':'', 'lt':'__lt', 'gt':'__gt', 'lte':'__lte', 'gte':'__gte',
+#              'con': '__icontains', 'strt':'__istartswith'}
+
+# sql_ops = {'eq':"= %(field)s", '!eq':"<> %(field)s", 
+#            'lt':"< %(field)s", '!lt':">= %(field)s",
+#            'gt':"> %(field)s", '!gt':"<= %(field)s",
+#            'lte':"<= %(field)s", '!lte':"> %(field)s",
+#            'gte':">= %(field)s", '!gte':"< %(field)s",
+#            'con':"LIKE %%%(field)s%%", '!con':"NOT LIKE %%%(field)s%%",
+# #           'con':ConStr("LIKE %(field)s"), '!con':ConStr("NOT LIKE %(field)s"),
+#            'strt':"LIKE %(field)s%%", '!strt':"NOT LIKE %(field)s%%",
+#            'in':InStr("IN %(field)s"), '!in':InStr("NOT IN %(field)s"),
+# }
+
+latest_cols = ['incactivityid', 'incidentid', 'incidentcategory', 
+               'incidenttype', 'updateddate', 'severity', 'city', 
+               'stateprovince', 'county', 'gist', 'latitude', 'longitude']
+               
+kmz_images_path = 'C:/Program Files/IBM HTTP Server 2.0/htdocs/en_US/icons/'
+kmz_cols = ['description', 'severity', 'incidenttype', 'incidentcategory',
+            'latitude', 'longitude', 'dateoccurred', 'gist', 'street', 'city',
+            'stateprovince', 'postal', 'country', 'infosource']
+
+def makeCSVResponse(rows, filename, cols=FAC_COLS):
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s.csv' % filename
+    writer = csv.writer(response)
+    writer.writerow([col.upper() for col in cols])
+    for row in rows:
+        writer.writerow([getattr(row, col) for col in cols])
+    return response
+
+cache = lambda delay:lambda func:cache_page(func, delay)
+
+@cache(60*60*12)
+def domestic(req):
+    return makeCSVResponse(nonNC4Facilities().filter(country='United States'),
+                           'domestic')
+
+@cache(60*60*12)
+def international(req):
+    return makeCSVResponse(nonNC4Facilities().exclude(country='United States'),
+                           'international')
+
+@cache(60*60*12)
+def nc4(req):
+    return makeCSVResponse(getFacilities().filter(facilityname__contains='NC4'),
+        'NC4_Facilities')
+
+def get_stats(comp, start, end, cursor):
+    cursor.execute(fac_query % (comp, start, end))
+    categories = []
+    sum = 0
+    for row in cursor:
+        categories.append({'incidentcategory':str(row[0]), 'num':str(row[1])})
+        sum += row[1]
+    return categories, sum
+ 
+def weekly_stats(request):
+    if request.POST and request.POST['start'] and request.POST['end']:
+        cursor = connection.cursor()
+        start = request.POST['start']
+        end = request.POST['end']
+        dom_categories, dom_sum = get_stats('=', start, end, cursor)
+        intl_categories, intl_sum = get_stats('<>', start, end, cursor)
+        total_sum = dom_sum + intl_sum
+        return render_to_response('incidents/weeklystats_results.html', 
+                                  locals())
+    return render_to_response('incidents/weeklystats_index.html', {})
+
+class PostRow(object):
+    def __init__(self, post, id):
+        self.post = post
+        self.id = id
+
+    def __getitem__(self, name):
+        return self.post[name+self.id]
+
+    def get(self, key, default):
+        return self.post.get(key, default)
+
+    def getlist(self, name):
+        return self.post.getlist(name+self.id)
+    
+
+def makeRow(post, id):
+    return PostRow(post, id)
+
+# def makeComps(post):
+#     ids = post['ids'].split(',')
+#     comps = []
+#     for row in (makeRow(post, id) for id in ids):
+#         cat = categories[row['type']]
+#         op = row['op']
+#         if row['not'] == '1': op = '!' + op
+#         if op == 'in':
+#             print row.getlist('field')
+#             field = [cat.parse(f) for f in row.getlist('field')]
+#         else:
+#             print row['field']
+#             field = cat.parse(row['field'])
+#         comp = '%(col)s %(opdata)s' % {'col':cat.db_name,
+#                                        'opdata':sql_ops[op] % \
+#                                            {'field':field}}
+#         comps.append(comp)
+#     return comps
+
+def makeComps(post):
+    return [make_comp(makeRow(post, id)) for id in post['ids'].split(',')]
+
+class RowDict(dict):
+    def __init__(self, row, cols):
+        data = dict(zip(cols, row))
+        for name, val in zip(cols, row):
+            self[name] = val
+        self['style'] = '%s_%s' % (self.incidentcategory, self.severity)
+
+    def __setitem__(self, name, value):
+#        if isinstance(value, datetime):
+#            dict.__setitem__(self, name, value.strftime('%m/%d/%Y %H:%M:%S'))
+#        elif hasattr(value, 'read'):
+        if hasattr(value, 'read'):
+            dict.__setitem__(self, name, value.read().decode('latin1'))
+        else:
+            dict.__setitem__(self, name, value)
+#        else:
+#            dict.__setitem__(self, name, unicode(value))
+
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __hasattr__(self, name):
+        return name in self
+
+
+def makeObjs(cursor, cols):
+    return [RowDict(row, cols) for row in cursor]
+
+def getObjects(post, cols=latest_cols):
+    comps = makeComps(post)
+    if post.has_key('latest') and post['latest'] == '1':
+        return getLatestObjects(post, cols, comps)
+    else:
+        return getAllObjects(post, cols, comps)
+
+def getAllObjects(post, cols, comps):
+    query = "SELECT %s FROM fusion.incactivity WHERE %s \
+ORDER BY dateoccurred DESC, updateddate, incidentid, incactivityid"
+
+    query %= (', '.join(cols), ' AND '.join(comps))
+    cursor = connection.cursor()
+    cursor.execute(query.replace('%', '%%'))
+    return makeObjs(cursor, cols), query
+
+def getLatestObjects(post, cols, comps):
+    query = """SELECT %s FROM fusion.incactivity inc, (%s) maxinc
+WHERE (maxinc.incactivityid=inc.incactivityid 
+    AND maxinc.incidentid=inc.incidentid) AND inc.dateoccurred <= CURRENT_TIMESTAMP 
+ORDER BY inc.dateoccurred DESC, inc.updateddate, inc.incidentid, 
+    inc.incactivityid"""
+    inner = "SELECT MAX(incactivityid) incactivityid, incidentid \
+FROM fusion.incactivity WHERE %s GROUP BY incidentid"
+    
+    inner %= ' AND '.join(comps)
+    query %= (', '.join(['inc.'+c for c in cols]), inner)
+    cursor = connection.cursor()
+    cursor.execute(query.replace('%', '%%'))
+    return makeObjs(cursor, cols), query
+
+def search(request):
+    if request.method == 'GET':
+        return render_to_response('reporting/search.html', {})
+    types = {
+        'Search': html,
+        'Excel': csv_out,
+        'Google Earth': kml,
+    }
+    for id in request.POST['ids'].split(','):
+        if not request.POST.get('field'+id, None):
+            # Possible XSS attack but it's internal (bad assumption?)
+            return render_to_response('reporting/search.html', request.POST)
+    return types[request.POST['type']](request)
+
+def html(request):
+    objs, query = getObjects(request.POST)
+
+    currInc = None
+    isOff = True
+    total_rows = 0
+    total_incidents = 0
+    for row in objs:
+        if row.incidentid != currInc:
+            isOff = not isOff
+            currInc = row.incidentid
+            total_incidents += 1
+        row.off = isOff
+        total_rows += 1
+    return render_to_response('reporting/results.html', locals())
+
+def kml(req):
+    cols = kmz_cols
+    placemarks, query = getLatestObjects(req.POST, cols, makeComps(req.POST))
+    now = datetime.now().isoformat()
+    name = 'Search Results @ %s' % now
+    styles = set([obj['style'] for obj in placemarks])
+
+    response = HttpResponse(mimetype='application/vnd.google-earth.kmz')
+    response['Content-Disposition'] = 'attachment; filename=Search-%s.kmz' % now
+    zf, sio = get_images_kmz(styles)
+    c = Context(locals())
+    zf.writestr('doc.kml', get_template('reporting/reporting.kml').render(c))
+    zf.close()
+    response.write(sio.getvalue())
+    return response
+
+def get_images_kmz(styles):
+    styles = ['incident_%s.gif' % style.lower() for style in styles]
+    sio = StringIO()
+    zf = ZipFile(sio, 'w')
+    for f in (f for f in os.listdir(kmz_images_path) if f.lower() in styles):
+        zf.write(kmz_images_path+f, 'images/%s' % f)
+    return zf, sio
+
+def csv_out(req):
+    cols = ['incidentid', 'incidentcategory', 'incidenttype', 'dateoccurred', 
+            'updateddate', 'severity', 'city', 'stateprovince', 'country', 
+            'gist', 'description', 'infosource', 'infoquality', 'latitude', 
+            'longitude']
+    filename = 'Search-%s.csv' % datetime.now().isoformat()
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    writer = csv.writer(response)
+    writer.writerow(cols)
+    objs, query = getObjects(req.POST, cols)
+    latest_inc = None
+    total_rows = 0
+    total_incidents = 0
+    for obj in objs:
+        writer.writerow([unicode(obj[i]).encode('ascii', 'backslashreplace') 
+                         for i in cols])
+        if latest_inc != obj['incidentid']:
+            latest_inc = obj['incidentid']
+            total_incidents += 1
+        total_rows += 1
+    writer.writerow(['Total Incidents', total_incidents])
+    writer.writerow(['Total Reports', total_rows])
+    return response
+
+def details(req):
+    cols = ['updateddate', 'dateoccurred', 'incidentcategory', 'incidenttype',
+            'city', 'country', 'updatedby', 'gist', 'description', 'severity',
+            'infosource', 'infoquality', 'conversationlog', 'attachmentlist']
+    try:
+        incactivityid = req.GET['incactid']
+    except Exception:
+        return HttpResponseNotFound()
+    cursor = connection.cursor()
+#     incactivity = IncActivity.objects.get(incactivityid=incactivityid)
+#     attachments = str(incactivity.attachmentlist)
+#     if attachments is not None and attachments != '':
+#         print type(attachments)
+#         attachments = Attachments.objects.filter(attachmentid__in=attachments.split(','))
+# WHY?: Because trying to access the incactivity.attachmentlist 
+#       raises an "LOB vairable no longer available" exception
+#    query = "SELECT %s FROM fusion.incactivity WHERE incactivityid=TO_TIMESTAMP('%s', 'MM/DD/YYYY HH24:MI:SS')"
+    query = "SELECT %s FROM fusion.incactivity WHERE incactivityid=TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM')"
+    query = query % (','.join(cols), incactivityid)
+    print query
+    cursor.execute(query)
+    incident = RowDict(cursor.fetchone(), cols)
+
+    if incident.attachmentlist:
+        ids = str(incident.attachmentlist).split(',')
+        attachments = Attachments.objects.filter(attachid__in=ids)
+        attach_query = """SELECT * FROM fusion.attachments WHERE attachid IN %s""" % ('(%s)' % ', '.join(["'%s'" % id for id in ids]))
+        print attach_query
+    else:
+        attachments = None
+    return render_to_response('reporting/details.html', 
+                              {'incident': incident, 'attachments': attachments,
+                               'incactivityid': incactivityid})
+
+def domestic_incidents(request):
+    return current_incidents(request, "country='United States'", 
+                             'Domestic-Incidents.kmz', 
+                             'Current Domestic Incidents')
+
+def current_incidents(request, comps, filename, title, cols=kmz_cols):
+    if type(comps) is str:
+        comps = [comps]
+    query = """SELECT %(cols)s
+FROM fusion.incidents INT
+INNER JOIN fusion.incactivity act ON INT.latestactivityid = act.incactivityid
+WHERE %(comps)s
+"""
+    query %= {'cols': ', '.join(cols), 'comps': ' AND '.join(comps+["currentstatus='OPEN'"])}
+    cursor = connection.cursor()
+    cursor.execute(query)
+    return make_kmz(makeObjs(cursor, cols), filename, title)
+
+def make_kmz(placemarks, filename, name):
+    styles = set([obj['style'] for obj in placemarks])    
+    response = HttpResponse(mimetype='application/vnd.google-earth.kmz')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    zf, sio = get_images_kmz(styles)
+    c = Context(locals())
+    zf.writestr('doc.kml', get_template('reporting/reporting.kml').render(c))
+    zf.close()
+    response.write(sio.getvalue())
+    return response
+    

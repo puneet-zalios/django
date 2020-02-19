@@ -1,0 +1,46 @@
+<html>
+<head>
+  <title>Weekly Stats</title>
+</head>
+
+<body>
+  <table>
+    <caption>Domestic</caption>
+    <tr><th>Incident Category</th><th>Count</th></tr>
+    {% for category in dom_categories %}
+    <tr><td>{{ category.incidentcategory }}</td><td>{{ category.num }}</td></tr>
+    {% endfor %}
+    <tr>
+      <td><strong>Sum</strong></td>
+      <td><strong>{{ dom_sum }}</strong></td>
+    </tr>
+  </table>
+  <table>
+    <caption>International</caption>
+    <tr><th>Incident Category</th><th>Count</th></tr>
+    {% for category in intl_categories %}
+    <tr><td>{{ category.incidentcategory }}</td><td>{{ category.num }}</td></tr>
+    {% endfor %}
+    <tr>
+      <td><strong>Sum</strong></td>
+      <td><strong>{{ intl_sum }}</strong></td>
+    </tr>
+  </table>
+  <table>
+    <tr><td><strong>Total Incidents</strong></td><td>{{ total_sum }}</td></tr>
+    <tr>
+      <td><strong>Total Domestic Alerts</strong></td>
+      <td><strong>{{ total_dom_alerts }}</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Total International Alerts</strong></td>
+      <td>{{ total_intl_alerts }}</td>
+    </tr>
+    <tr>
+      <td><strong>Total Alerts</strong></td>
+      <td>{{ total_alerts }}</td>
+    </tr>
+  </table>
+  </ul>
+</body>
+</html>

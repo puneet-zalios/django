@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Incident Details{% endblock %}
+
+{% block headers %}
+{% endblock headers %}
+
+{% block content %}
+{% if incactivityid %}
+<dl>
+  <dt>Updated Date</dt>
+  <dd>{{incident.updateddate|escape}}</dd>
+
+  <dt>Date Occurred</dt>
+  <dd>{{incident.dateoccurred|escape}}</dd>
+
+  <dt>Updated By</dt>
+  <dd>{{incident.updatedby|escape}}</dd>
+
+  <dt>Category</dt>
+  <dd>{{incident.incidentcategory|escape}}</dd>
+  
+  <dt>Type</dt>
+  <dd>{{incident.incidenttype|escape}}</dd>
+
+  <dt>Severity</dt>
+  <dd>{{incident.severity}}</dd>
+
+  <dt>Source</dt>
+  <dd>{{incident.infosource|escape}}</dd>
+
+  <dt>Quality</dt>
+  <dd>{{incident.infoquality|escape}}</dd>
+
+  <dt>Country</dt>
+  <dd>{{incident.country|escape}}</dd>
+
+  <dt>Street</dt>
+  <dd>{{incident.street|escape}}</dd>
+
+  <dt>City</dt>
+  <dd>{{incident.city|escape}}</dd>
+
+  <dt>County</dt>
+  <dd>{{incident.county|escape}}</dd>
+  
+  <dt>State/Province</dt>
+  <dd>{{incident.stateprovince|escape}}</dd>
+  
+  <dt>ZIP/Postal Code</dt>
+  <dd>{{incident.postal|escape}}</dd>
+  
+  <dt>Latitude</dt>
+  <dd>{{incident.latitude|escape}}</dd>
+  
+  <dt>Longitude</dt>
+  <dd>{{incident.longitude|escape}}</dd>
+  
+  <dt>Approximate Location</dt>
+  <dd>
+    {% ifequal incident.approximate 1 %}
+	Yes
+    {% endifequal %}
+    {% ifequal incident.approximate 0 %}
+	No
+    {% endifequal %}
+  
+  </dd>
+
+  <dt>Synopsis(Gist)</dt>
+  <dd>{{incident.gist|escape}}</dd>
+
+  <dt>Description</dt>
+  <dd>{{incident.description|escape}}</dd>
+  
+  <dt>Internal Comments</dt>
+  <dd>{{incident.conversationlog}}</dd>
+
+  <dt>Special Event</dt>
+  <dd>{{incident.program|escape}}</dd>
+  
+
+  <dt>Notification</dt>
+  <dd>{{incident.notifyrule|escape}}</dd>
+
+  {% if incident.attachmentlist %}
+  <dt>Attachment List</dt>
+  <dd>
+    <ul>
+      {% for attach in attachments %}
+      {% ifequal attach.mimetype "text/html" %}
+      <li><a href="{{attach.linkdata|escape}}" target="_blank">{{attach.label|escape}}</a></li>
+      {% endifequal %}
+      {% endfor %}
+    </ul>
+  </dd>
+  {% endif %}
+</dl>
+{% else %}
+<p>There is no ID provided</p>
+{% endif %}
+{% endblock content %}

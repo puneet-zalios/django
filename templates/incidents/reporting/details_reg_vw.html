@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Incident Details{% endblock %}
+
+{% block headers %}
+{% endblock headers %}
+
+{% block content %}
+{% if item %}
+<dl>
+  <dt>Date Created</dt>
+  <dd>{{item.createddate|date:"m/d/Y h:i A"}}</dd>
+  <br/>
+  <dt>Date Updated</dt>
+  <dd>{{item.updateddate|date:"m/d/Y h:i A"}}</dd>
+  <br/>
+  <dt>Severity</dt>
+  <dd>{{item.severity|escape}}</dd>
+  <br/>
+  <dt>Subject</dt>
+  <dd>{{item.subject|escape}}</dd>
+  <br/>
+  <dt>Description</dt>
+  <dd>{{item.description|escape}}</dd>
+  <br/>
+  <dt>Publish Date</dt>
+  <dd>{{item.publishdate|escape}}</dd>
+  <br/>
+  <dt>Effective Date</dt>
+  <dd>{{item.effectivedate|escape}}</dd>
+  <br/>
+  <dt>Country</dt>
+  <dd>{{item.country|escape}}</dd>
+  <br/>
+  
+  <dt>City</dt>
+  <dd>{{item.city|escape}}</dd>
+  <br/>
+
+  <dt>Lat, Long</dt>
+  <dd>{{item.wktgeoms|escape}}</dd>
+  <br/>
+
+
+  <dt>Region</dt>
+  <dd>{{item.region|escape}}</dd>
+  <br/>
+
+  <dt>Secondary Location</dt>
+  <dd>{{item.secondary_location|escape}}</dd>
+  <br/>
+
+  <dt>Attachment</dt>
+  <dd><a href="https://solutions10.n-c4.net/DocAttach?id={{item.docattachid}}" target="_blank">{{item.label}}</a> </dd>
+
+  
+{% endif %}
+{% endblock content %}

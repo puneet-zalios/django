@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Incidents Result{% endblock %}
+
+{% block headers %}
+<style type="text/css">
+  .off {
+     background-color: #CCC;
+  }
+</style>
+
+<script type="text/javascript">
+$j(document).ready(function() {
+  $j('#refine_link').click(function(){
+    $j('#criteria_form').submit();
+  })
+});
+</script>
+{% endblock headers %}
+
+{% block sidebar %}
+<li><a href="#" id="refine_link">Refine Current Search</a></li>
+<form name="mainForm" method="post" action="/django/reporting/" id='criteria_form'>
+  <input type="hidden" name="search_criteria" value="{{ criteria }}"/>
+  <input type="hidden" name="refine" value="yes"/>
+</form>
+{% endblock sidebar %}
+
+{% block content %}
+<dl>
+  <dt>Total Incidents</dt><dd>{{ total_incidents }}</dd>
+  <dt>Total Reports</dt><dd>{{ total_rows }}</dd>
+</dl>
+<table>
+{% if objs %}
+<tr><th>Updated</th><th>Severity</th><th>Category</th><th>Type</th><th>City</th><th>State</th><th>County</th></tr>
+{% for row in objs %}
+<tr{% if row.off %} class="off"{% endif %}   {% if row.out_window %} style="font-color: #D3D3D3;font-style: italic;"{% endif %}   >
+  <td>{{row.updateddate|date:"m/d/Y h:i A"}}</td>
+  <td>{{row.severity}}</td>
+  <td>{{row.incidentcategory}}</td>
+  <td>{{row.incidenttype}}</td>
+  <td>{{row.city|escape}}</td>
+  <td>{{row.stateprovince}}</td>
+  <td>{{row.country}}</td>
+  <td>
+    <form action="./details" method="get">
+      <div>
+	<input type="hidden" name="incactid" value="{{ row.incactivityid|date:"d-M-y h.i.s A"|upper }}" />
+	<input type="hidden" name="incidentid" value="{{row.incidentid}}" />
+	<input type="submit" value="Details" />
+      </div>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+{% endif %}
+</table>
+{% endblock content %}

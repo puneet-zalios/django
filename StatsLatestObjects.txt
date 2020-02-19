@@ -1,0 +1,5 @@
+getlatestobj SELECT inc.incactivityid, inc.incidentid, inc.incidentcategory, inc.incidenttype, inc.updateddate, inc.severity, inc.city, inc.stateprovince, inc.county, inc.gist, inc.latitude, inc.longitude FROM fusion.tbl_incactivity inc, (SELECT MIN(incactivityid) incactivityid, incidentid FROM fusion.tbl_incactivity WHERE dateoccurred > TO_TIMESTAMP('20-03-2016 08:43', 'DD-MM-YYYY HH24:MI') AND updatedby LIKE 'NC4%' GROUP BY incidentid) maxinc
+WHERE (maxinc.incactivityid=inc.incactivityid 
+    AND maxinc.incidentid=inc.incidentid) AND inc.dateoccurred <= CURRENT_TIMESTAMP 
+ORDER BY inc.dateoccurred DESC, inc.updateddate, inc.incidentid, 
+    inc.incactivityid

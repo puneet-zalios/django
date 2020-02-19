@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+  <Document>
+    <name>{{ name }}</name>
+    {% for style in styles %}
+    <Style id="{{ style }}">
+      <IconStyle>
+        <Icon>http://nc4nas11.nc4.us/icons/incident_{{ style }}.gif</Icon>
+      </IconStyle>
+    </Style>
+    {% endfor %}
+    {% for placemark in placemarks %}
+    <Placemark>
+      <name>{{ placemark.incidenttype|escape }}</name>
+      <description>
+        <![CDATA[
+        <table>
+          <tr><td><b>When:</b></td><td>{{ placemark.dateoccurred }}</td></tr>
+          <tr>
+            <td><b>Where:</b></td>
+            <td>
+              {{ placemark.street }}<br />
+              {{ placemark.city }}, {{ placemark.stateprovince }} 
+              {{ placemark.postal }}<br />
+              {{ placemark.coutry }}
+            </td>
+          </tr>
+          <tr><td><b>Source:</b></td><td>{{ placemark.infosource }}</td></tr>
+          <tr><td><b>Severity:</b></td><td>{{ placemark.severity }}</td></tr>
+          <tr><td><b>Synopsis:</b></td><td>{{placemark.gist}}</td></tr>
+          <tr><td colspan="2"><b>Description:</b></td></tr>
+          <tr><td colspan="2">{{ placemark.description|escape }}</td></tr>
+        </table>
+        ]]>
+      </description>
+      <visibility>1</visibility>
+      <styleUrl>#{{ placemark.style }}</styleUrl>
+      <Point>
+        <extrude>1</extrude>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <coordinates>{{ placemark.longitude }},{{ placemark.latitude }},0</coordinates>
+      </Point>
+    </Placemark>
+    {% endfor %}
+  </Document>
+</kml>
