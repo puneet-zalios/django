@@ -1,5 +1,4 @@
 # Django settings for reporting project.
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -68,13 +67,6 @@ ADMIN_MEDIA_PREFIX = '/media/'
 SECRET_KEY = 'p6!&o$3k43()qv9ik44m*-y1-6pn_792^&k1eoj!*2awz&(bi7'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    #'django.template.loaders.filesystem.load_template_source',
-	'django.template.loaders.filesystem.Loader',
-    #'django.template.loaders.app_directories.load_template_source',
-	'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.load_template_source',
-)
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -85,6 +77,7 @@ MIDDLEWARE_CLASSES = (
 )
 ROOT_URLCONF = 'fusion.urls'
 
+
 TEMPLATE_DIRS = (
     'D:/django/templates',
     'D:/django/templates/incidents',
@@ -93,16 +86,37 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-TEMPLATE_CONTEXT_PROCESSORS += (
-    'django.core.context_processors.request',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [TEMPLATE_DIRS],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                #'django.template.loaders.filesystem.load_template_source',
+                'django.template.loaders.filesystem.Loader',
+                #'django.template.loaders.app_directories.load_template_source',
+                'django.template.loaders.app_directories.Loader',
+                #'django.template.loaders.eggs.load_template_source',
+
+            ],
+        },
+    },
+]
 
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-
-    'endless_pagination',
     'fusion.incidents',
 )
 
