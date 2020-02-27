@@ -1,0 +1,34 @@
+# Optimized files
+__pycache__
+*.pyc
+
+# virtualenv
+env/
+venv/
+
+# IDE files
+.idea/
+
+
+# Log files
+*.log
+*.log.*
+log
+
+#Bin files
+bin
+
+# Backup Files
+*.bak
+
+# Test Artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+test_db.sqlite3
+
+#Local Settings
+#rss_tool/local_settings.py
+
+#debug files
+fnDebug.txt
