@@ -3,11 +3,11 @@ BASE_DIR = 'D:/django'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'RC1W',
-        'USER': 'fusion',
-        'PASSWORD': 'FUSION',
-        'HOST': 'edb111',
-        'PORT': '1571'
+        'NAME': 'fusion',
+        'USER': 'sys',
+        'PASSWORD': 'Oradoc_db1',
+        'HOST': 'wrangler_db',
+        'PORT': '1521'
     }
 }
 
