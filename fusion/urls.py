@@ -1,8 +1,18 @@
-from django.conf.urls import patterns, url
+from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from incidents.views import *
-from auth.views import user_login, user_logout
+from fusion.incidents.views import (
+    domestic,
+    international,
+    nc4,
+    search,
+    search_reg,
+    details_reg,
+    details_reg_vw,
+    details,
+    kml,
+    csv_out)
+from django.contrib.auth.views import LoginView, LogoutView
 
 domestic_incidents = {
     'comps': "country='United States'",
@@ -16,27 +26,26 @@ international_incidents = {
     'title': 'Current International Incidents',
 }
 
-urlpatterns = patterns(
-    'fusion.incidents.views',
-    (r'facilities/domestic/', domestic),
-    (r'facilities/international/', international),
-    (r'facilities/nc4/', nc4),
-    (r'incidents/domestic/', 'current_incidents', domestic_incidents),
-    (r'incidents/international/', 'current_incidents', international_incidents),
+urlpatterns = [
+    path('facilities/domestic/', domestic),
+    path('facilities/international/', international),
+    path('facilities/nc4/', nc4),
+#    path('incidents/domestic/', 'current_incidents', domestic_incidents),
+#    path('incidents/international/', 'current_incidents', international_incidents),
 #    (r'weeklystats/$', weekly_stats),
-    (r'reporting/$', search),
-    (r'reporting/reg/$', search_reg),
-    (r'reporting/reg/details/', details_reg),
-    (r'reporting/reg/details_vw/', details_reg_vw),
-    (r'reporting/details/', details),
-    (r'reporting/google_earth/', kml),
-    (r'reporting/excel/', csv_out),
-    url(r'login/', user_login, name='login'),
-    url(r'logout/', user_logout, name='logout'),
+    path('reporting/$', search),
+    path('reporting/reg/$', search_reg),
+    path('reporting/reg/details/', details_reg),
+    path('reporting/reg/details_vw/', details_reg_vw),
+    path('reporting/details/', details),
+    path('reporting/google_earth/', kml),
+    path('reporting/excel/', csv_out),
+    path('login/', LoginView.as_view() ,name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 #    (r'images/$', images)
     # (r'^reporting/', include('reporting.foo.urls')),
     # (r'^admin/', include('django.contrib.admin.urls')),
-) + static('script', document_root=settings.STATIC_JS_ROOT)
+] + static('script', document_root=settings.STATIC_JS_ROOT)
 
 urlpatterns += static('style', document_root=settings.STATIC_CSS_ROOT)
 urlpatterns += static('images', document_root=settings.STATIC_IMAGES_ROOT)
