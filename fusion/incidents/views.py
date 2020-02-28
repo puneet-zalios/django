@@ -2,13 +2,13 @@
 import csv
 import os
 from datetime import datetime
-from StringIO import StringIO
+from io import StringIO
 from zipfile import ZipFile
 import json
 
 from django.db import connection
 from django.http import HttpResponse, HttpResponseNotFound
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.conf import settings
 from django.template import Context, Template
 from django.template.loader import get_template
@@ -16,8 +16,8 @@ from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
-from comp import make_comp, Col, DateCol,AnalystCol
-from models import Attachments, Facility
+from fusion.incidents.comp import make_comp, Col, DateCol,AnalystCol
+from fusion.incidents.models import Attachments, Facility
 
 rt_conditions_cols = {
     'inc': Col('Incident Category', 'acti.incidentcategory'),
@@ -316,7 +316,7 @@ def getAllObjects(post, cols, comps):
     #.write("getallobj " + cols)
 
     query %= (', '.join(['acti.'+c+" "+c for c in cols]), ' AND '.join(comps))
-    print query
+    print(query)
     cursor = connection.cursor()
     #cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     f.write("getallobj " + query)
@@ -334,7 +334,7 @@ def getAllIncObjects(post, cols, comps):
     #.write("getallobj " + cols)
 
     query %= (', '.join(['acti_outer.'+c+" "+c for c in cols]), ' AND '.join(comps))
-    print query
+    print(query)
     cursor = connection.cursor()
     #cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     f.write(query)
@@ -384,7 +384,7 @@ FROM fusion.tbl_incactivity WHERE %s GROUP BY incidentid"
 @csrf_exempt
 def search_reg(request):
     if request.method == 'GET':
-        return render_to_response('reporting/search_reg.html', {})
+        return render('reporting/search_reg.html', {})
     types = {
         'Search': html_reg,
         'Excel': csv_out,
@@ -395,7 +395,7 @@ def search_reg(request):
     if is_refine:
         criteria = request.POST.get('search_criteria')
         print(criteria)
-        return render_to_response('reporting/search_reg.html', {
+        return render('reporting/search_reg.html', {
             'criteria': criteria,
             'is_refine': is_refine
         })
@@ -403,7 +403,7 @@ def search_reg(request):
         for id in request.POST['ids'].split(','):
             if not request.POST.get('field'+id, None):
                 # Possible XSS attack but it's internal (bad assumption?)
-                return render_to_response('reporting/search_reg.html', request.POST)
+                return render('reporting/search_reg.html', request.POST)
         return types[request.POST['type']](request)
 
 
@@ -411,7 +411,7 @@ def search_reg(request):
 @csrf_exempt
 def search(request):
     if request.method == 'GET':
-        return render_to_response('reporting/search.html', {})
+        return render('reporting/search.html', {})
     types = {
         'Search': html,
         'Excel': csv_out,
@@ -422,7 +422,7 @@ def search(request):
     if is_refine:
         criteria = request.POST.get('search_criteria')
         print(criteria)
-        return render_to_response('reporting/search.html', {
+        return render('reporting/search.html', {
             'criteria': criteria,
             'is_refine': is_refine
         })
@@ -430,7 +430,7 @@ def search(request):
         for id in request.POST['ids'].split(','):
             if not request.POST.get('field'+id, None):
                 # Possible XSS attack but it's internal (bad assumption?)
-                return render_to_response('reporting/search.html', request.POST)
+                return render('reporting/search.html', request.POST)
         return types[request.POST['type']](request)
 
 
@@ -456,7 +456,7 @@ def html(request):
             post_data[key] = value[0]
         if len(value) > 1:
             post_data[key] = value
-    return render_to_response('reporting/results.html', {
+    return render('reporting/results.html', {
         'criteria': json.dumps(post_data),
         'total_rows': total_rows,
         'total_incidents': total_incidents,
@@ -503,7 +503,7 @@ def html_reg(request):
         objs.remove(x)
     f.close()	
 
-    return render_to_response('reporting/results_reg.html', {
+    return render('reporting/results_reg.html', {
         'criteria': json.dumps(post_data),
         'total_rows': objs[0]['count(*)'] if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else len(objs),
         'objs': None if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else objs
@@ -638,7 +638,7 @@ def details(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render_to_response('reporting/details.html', 
+    return render('reporting/details.html', 
                               {'incident': incident, 'attachments': attachments,
                                'incactivityid': incactivityid})
 
@@ -693,7 +693,7 @@ def details_reg(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render_to_response('reporting/details_reg.html', 
+    return render('reporting/details_reg.html', 
                               {'item': item, 'actors':actors,'categories':categories,'attachments': None})
                                
 @login_required
@@ -772,7 +772,7 @@ def details_reg_vw(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render_to_response('reporting/details_reg_vw.html', 
+    return render('reporting/details_reg_vw.html', 
                               {'item': item, 'actors':None,'categories':None,'attachments': None})
 
 
