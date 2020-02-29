@@ -123,3 +123,5 @@ STATICFILES_FINDERS = [
 ]
 
 STATIC_URL = '/static/'
+
+LOGIN_URL = '/login/'
