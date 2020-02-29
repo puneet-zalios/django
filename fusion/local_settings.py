@@ -1,20 +1,18 @@
-BASE_DIR = 'D:/django'
+import cx_Oracle
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'fusion',
+        'NAME': 'ORCLCDB',
         'USER': 'sys',
         'PASSWORD': 'Oradoc_db1',
         'HOST': 'wrangler_db',
-        'PORT': '1521'
+        'PORT': '1521',
+        'OPTIONS': {
+            'mode': cx_Oracle.SYSDBA
+        },
     }
 }
-
-TEMPLATE_DIRS = (
-    'D:/django/templates',
-    'D:/django/templates/incidents',
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)

@@ -33,8 +33,8 @@ urlpatterns = [
 #    path('incidents/domestic/', 'current_incidents', domestic_incidents),
 #    path('incidents/international/', 'current_incidents', international_incidents),
 #    (r'weeklystats/$', weekly_stats),
-    path('reporting/$', search),
-    path('reporting/reg/$', search_reg),
+    path('reporting/', search),
+    path('reporting/reg/', search_reg),
     path('reporting/reg/details/', details_reg),
     path('reporting/reg/details_vw/', details_reg_vw),
     path('reporting/details/', details),
@@ -45,8 +45,4 @@ urlpatterns = [
 #    (r'images/$', images)
     # (r'^reporting/', include('reporting.foo.urls')),
     # (r'^admin/', include('django.contrib.admin.urls')),
-] + static('script', document_root=settings.STATIC_JS_ROOT)
-
-urlpatterns += static('style', document_root=settings.STATIC_CSS_ROOT)
-urlpatterns += static('images', document_root=settings.STATIC_IMAGES_ROOT)
-urlpatterns += static('icons', document_root=settings.STATIC_ICONS_ROOT)
+]

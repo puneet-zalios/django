@@ -1,10 +1,8 @@
 # Django settings for reporting project.
+import os
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-BASE_DIR = 'D:/django'
-
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                            os.pardir))
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -79,11 +77,7 @@ ROOT_URLCONF = 'fusion.urls'
 
 
 TEMPLATE_DIRS = (
-    'D:/django/templates',
-    'D:/django/templates/incidents',
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_ROOT, 'templates').replace('\\','/'),
 )
 
 TEMPLATES = [
@@ -95,19 +89,9 @@ TEMPLATES = [
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
-            ],
-            'loaders': [
-                #'django.template.loaders.filesystem.load_template_source',
-                'django.template.loaders.filesystem.Loader',
-                #'django.template.loaders.app_directories.load_template_source',
-                'django.template.loaders.app_directories.Loader',
-                #'django.template.loaders.eggs.load_template_source',
-
             ],
         },
     },
@@ -117,6 +101,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.staticfiles',
     'fusion.incidents',
 )
 
@@ -127,8 +112,18 @@ try:
 except ImportError:
     pass
 
+# Static files (CSS, JavaScript, Images)
 
-STATIC_JS_ROOT = BASE_DIR + '/fusion/script'
-STATIC_CSS_ROOT = BASE_DIR + '/fusion/style'
-STATIC_IMAGES_ROOT = BASE_DIR + '/fusion/images'
-STATIC_ICONS_ROOT = BASE_DIR + '/fusion/icons'
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_ROOT, "fusion", "images"),
+    os.path.join(PROJECT_ROOT, "fusion", "icons"),
+    os.path.join(PROJECT_ROOT, "fusion", "scripts"),
+    os.path.join(PROJECT_ROOT, "fusion", "styles"),
+]
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
+
+STATIC_URL = '/static/'
