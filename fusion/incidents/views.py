@@ -380,7 +380,7 @@ FROM fusion.tbl_incactivity WHERE %s GROUP BY incidentid"
 @csrf_exempt
 def search_reg(request):
     if request.method == 'GET':
-        return render('reporting/search_reg.html', {})
+        return render(request, 'incidents/reporting/search_reg.html', {})
     types = {
         'Search': html_reg,
         'Excel': csv_out,
@@ -391,7 +391,7 @@ def search_reg(request):
     if is_refine:
         criteria = request.POST.get('search_criteria')
         print(criteria)
-        return render('reporting/search_reg.html', {
+        return render(request, 'incidents/reporting/search_reg.html', {
             'criteria': criteria,
             'is_refine': is_refine
         })
@@ -399,7 +399,8 @@ def search_reg(request):
         for id in request.POST['ids'].split(','):
             if not request.POST.get('field'+id, None):
                 # Possible XSS attack but it's internal (bad assumption?)
-                return render('reporting/search_reg.html', request.POST)
+                return render(request, 'incidents/reporting/search_reg.html',
+                              request.POST)
         return types[request.POST['type']](request)
 
 
@@ -407,7 +408,7 @@ def search_reg(request):
 @csrf_exempt
 def search(request):
     if request.method == 'GET':
-        return render('reporting/search.html', {})
+        return render(request, 'incidents/reporting/search.html', {})
     types = {
         'Search': html,
         'Excel': csv_out,
@@ -418,7 +419,7 @@ def search(request):
     if is_refine:
         criteria = request.POST.get('search_criteria')
         print(criteria)
-        return render('reporting/search.html', {
+        return render(request, 'incidents/reporting/search.html', {
             'criteria': criteria,
             'is_refine': is_refine
         })
@@ -426,7 +427,7 @@ def search(request):
         for id in request.POST['ids'].split(','):
             if not request.POST.get('field'+id, None):
                 # Possible XSS attack but it's internal (bad assumption?)
-                return render('reporting/search.html', request.POST)
+                return render(request, 'incidents/reporting/search.html', request.POST)
         return types[request.POST['type']](request)
 
 
@@ -452,7 +453,7 @@ def html(request):
             post_data[key] = value[0]
         if len(value) > 1:
             post_data[key] = value
-    return render('reporting/results.html', {
+    return render(request, 'incidents/reporting/results.html', {
         'criteria': json.dumps(post_data),
         'total_rows': total_rows,
         'total_incidents': total_incidents,
@@ -499,7 +500,7 @@ def html_reg(request):
         objs.remove(x)
     f.close()
 
-    return render('reporting/results_reg.html', {
+    return render(request, 'incidents/reporting/results_reg.html', {
         'criteria': json.dumps(post_data),
         'total_rows': objs[0]['count(*)'] if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else len(objs),
         'objs': None if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else objs
@@ -634,7 +635,7 @@ def details(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render('reporting/details.html', 
+    return render(req, 'incidents/reporting/details.html',
                               {'incident': incident, 'attachments': attachments,
                                'incactivityid': incactivityid})
 
@@ -689,7 +690,7 @@ def details_reg(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render('reporting/details_reg.html', 
+    return render(req, 'incidents/reporting/details_reg.html',
                               {'item': item, 'actors':actors,'categories':categories,'attachments': None})
 
 @login_required
