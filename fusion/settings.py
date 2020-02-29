@@ -93,13 +93,13 @@ TEMPLATES = [
     },
 ]
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'fusion.incidents',
-)
+]
 
 EMAIL_HOST = '10.10.100.6'
 
