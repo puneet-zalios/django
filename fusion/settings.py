@@ -27,8 +27,6 @@ DATABASES = {
 #DATABASE_PORT = '1571'             # Set to empty string for default. Not used with sqlite3.
 
 # CACHE
-CACHE_BACKEND = 'file://C:/tmp/'
-
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
