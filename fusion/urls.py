@@ -1,6 +1,8 @@
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
+
+from fusion.auth.views import user_login, user_logout
 from fusion.incidents.views import (
     domestic,
     international,
@@ -12,7 +14,6 @@ from fusion.incidents.views import (
     details,
     kml,
     csv_out)
-from django.contrib.auth.views import LoginView, LogoutView
 
 domestic_incidents = {
     'comps': "country='United States'",
@@ -40,8 +41,8 @@ urlpatterns = [
     path('reporting/details/', details),
     path('reporting/google_earth/', kml),
     path('reporting/excel/', csv_out),
-    path('login/', LoginView.as_view() ,name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('login/', user_login, name='login'),
+    path('logout/', user_logout, name='logout'),
 #    (r'images/$', images)
     # (r'^reporting/', include('reporting.foo.urls')),
     # (r'^admin/', include('django.contrib.admin.urls')),
