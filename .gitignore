@@ -15,9 +15,6 @@ venv/
 *.log.*
 log
 
-#Bin files
-bin
-
 # Backup Files
 *.bak
 
