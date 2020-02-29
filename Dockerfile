@@ -8,8 +8,6 @@ ARG USER="fusion"
 RUN test -n "$UID"
 RUN test -n "$GID"
 
-COPY ./fusion/requirements.txt /app
-
 RUN apk --no-cache add shadow \
     gcc \
     musl-dev \
@@ -38,6 +36,8 @@ RUN apk --no-cache add shadow \
     libmemcached-dev \
     && addgroup -g $GID -S $USER \
     && adduser -u $UID -S -G $USER $USER
+
+COPY ./fusion/requirements.txt /app
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir --no-use-pep517 -r requirements.txt \
