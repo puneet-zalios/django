@@ -10,13 +10,12 @@ from django.db import connection
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.conf import settings
-from django.template import Context, Template
+from django.template import Context
 from django.template.loader import get_template
-from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
-from fusion.incidents.comp import make_comp, Col, DateCol,AnalystCol
+from fusion.incidents.comp import make_comp, Col, DateCol, AnalystCol
 from fusion.incidents.models import Attachments, Facility
 
 rt_conditions_cols = {
@@ -33,7 +32,7 @@ rt_conditions_cols = {
     'sev': Col('Severity', 'acti.severity'),
     'annum': AnalystCol('Analyst', "replace(acti.createdby,' ','')"),
     'desc': Col('Description', 'acti.description'),
-	'intcom': Col('Conversationlog', 'acti.conversationlog'),
+    'intcom': Col('Conversationlog', 'acti.conversationlog'),
     'source': Col('Confirmation source', 'acti.infosource'),
     'quality': Col('Confirmation quality', 'acti.infoquality'),
     'program': Col('Program', 'acti.program'),
@@ -62,7 +61,7 @@ vw_conditions_cols = {
     'body': Col('Body', 'updatedby'),
 }
 
-    
+
 FAC_COLS = ['facilityname', 'createdby', 'createddate', 'latitude', 'longitude',
             'street', 'city', 'county', 'district', 'stateprovince', 'region',
             'country', 'updatedby', 'updateddate', 'facilityid']
@@ -77,7 +76,7 @@ nonNC4Facilities = lambda: getFacilities().exclude(facilityname__contains='NC4')
 fac_query = """
 SELECT incidentcategory, COUNT(DISTINCT incidentid) num
 FROM fusion.tbl_incactivity
-WHERE country %s 'United States' 
+WHERE country %s 'United States'
   AND createddate BETWEEN TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI')
       AND TO_TIMESTAMP('%s', 'YYYY-MM-DD HH24:MI')
   AND activitystatus <> 'ARCHIVED'
@@ -85,10 +84,10 @@ GROUP BY incidentcategory
 ORDER BY incidentcategory
 """
 
-latest_cols = ['incactivityid', 'incidentid', 'incidentcategory', 
-               'incidenttype', 'updateddate', 'severity', 'city', 
+latest_cols = ['incactivityid', 'incidentid', 'incidentcategory',
+               'incidenttype', 'updateddate', 'severity', 'city',
                'stateprovince', 'country', 'gist', 'latitude', 'longitude']
-			   
+
 vw_cols = ['doclibid','createddate','updateddate','subject','description',
                     'publishdate','effectivedate','doctype','severity','docattachid','label','country','city','region','wktgeoms','valuelabel']
 regional_cols = ['itemid','createddate','itemsignificance','country','itemcountryline',
@@ -141,7 +140,7 @@ def nc4(req):
 #    cursor2.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     return makeCSVResponse(getFacilities().filter(facilityname__contains='NC4'),
         'NC4_Facilities')
- 
+
 class PostRow(object):
     def __init__(self, post, id):
         self.post = post
@@ -155,7 +154,7 @@ class PostRow(object):
 
     def getlist(self, name):
         return self.post.getlist(name+self.id)
-    
+
 
 def makeRow(post, id):
     return PostRow(post, id)
@@ -164,8 +163,8 @@ def makeComps(post,conditions_cols):
     l=[]
     for id in post['ids'].split(','):
         row = makeRow(post, id)
-        if (conditions_cols.has_key(row['type'])):		
-	        l.append(make_comp(row,post,conditions_cols))	
+        if (conditions_cols.has_key(row['type'])):
+            l.append(make_comp(row,post,conditions_cols))
     #l = [make_comp(makeRow(post, id),post,conditions_cols) for id in post['ids'].split(',')]
 
     if post['searchtype']!='regional' and post.has_key('cybertech') and post['cybertech'] == '1':
@@ -176,15 +175,12 @@ def makeComps(post,conditions_cols):
 
 class FormattedDateTime(datetime):
     def __new__(self, dt):
-        return datetime.__new__(self, dt.year, dt.month, dt.day, dt.hour, 
+        return datetime.__new__(self, dt.year, dt.month, dt.day, dt.hour,
                                 dt.minute, dt.second, dt.microsecond, dt.tzinfo)
 
     def __str__(self):
         return self.strftime('%m/%d/%Y %H:%M')
 
-    def __unicode__(self):
-        return unicode(str(self))
-    
 
 class RowDict(dict):
     def __init__(self, row, cols):
@@ -213,60 +209,60 @@ class RowDict(dict):
 
 def makeObjs(cursor, cols):
     return [RowDict(row, cols) for row in cursor]
-	
+
 def joinVWComps(comps):
     if not comps:
         return ''
     else:
-        return 	' AND ' + ' AND '.join(comps)
+        return  ' AND ' + ' AND '.join(comps)
 
 def getRegionalObjects(post, cols=regional_cols):
     comps = makeComps(post,regional_conditions_cols)
     #post['vw']='true';
     comps_vw = makeComps(post,vw_conditions_cols)
-    dict = {'itemtitle': 'subject', 'ItemSignificance': 'severity', 'CREATEDDATE': 'CREATEDDATE'}	
+    dict = {'itemtitle': 'subject', 'ItemSignificance': 'severity', 'CREATEDDATE': 'CREATEDDATE'}
     f = open(settings.BASE_DIR + 'RegionalAllObjects.txt','w')
     #f.write("getallobj " + comps[0])
-    has_region = False	
+    has_region = False
     for compp in comps:
         if 'esaregion' in compp:
-            region_field, region_value = compp.split('=')		
+            region_field, region_value = compp.split('=')
             f.write("Region " + compp)
             f.write("Region_val " + region_value)
             has_region = True
-		
+
     if has_region:
-        query = """(SELECT TO_CHAR(itemid) as itemid, createddate, itemsignificance, country, itemcountryline, itemtitle, synopsis, 'dailyitems' as itemtype 
-        FROM transecur.dailyitems di WHERE di.itemid IN (Select DISTINCT di.itemid FROM transecur.dailyitems di, TranSecur.itemLocations il, transecur.locations tl 
+        query = """(SELECT TO_CHAR(itemid) as itemid, createddate, itemsignificance, country, itemcountryline, itemtitle, synopsis, 'dailyitems' as itemtype
+        FROM transecur.dailyitems di WHERE di.itemid IN (Select DISTINCT di.itemid FROM transecur.dailyitems di, TranSecur.itemLocations il, transecur.locations tl
         WHERE di.primary_id=il.dailyitems_key AND il.locationid=tl.locationid AND %s)
         UNION
-        select doclibid as itemid, createddate, severity as itemsignificance, l.country as country, attrs.valuelabel as itemcountryline, subject as itemtitle, 
-		'' as synopsis, doctype as itemtype 
-        from vw_documents,table(vw_documents.locations) l, table(vw_documents.nc4attrs) attrs WHERE 
-		(doctype='SEB' OR doctype='SR') AND attrs.numval IN (SELECT locationid from transecur.locations where esaregion=%s)
-		%s) ORDER BY CREATEDDATE DESC"""
+        select doclibid as itemid, createddate, severity as itemsignificance, l.country as country, attrs.valuelabel as itemcountryline, subject as itemtitle,
+        '' as synopsis, doctype as itemtype
+        from vw_documents,table(vw_documents.locations) l, table(vw_documents.nc4attrs) attrs WHERE
+        (doctype='SEB' OR doctype='SR') AND attrs.numval IN (SELECT locationid from transecur.locations where esaregion=%s)
+        %s) ORDER BY CREATEDDATE DESC"""
         query %= (' AND '.join(comps), ''.join(region_value),joinVWComps(comps_vw))
-	
-    else:	
-        query = """(SELECT TO_CHAR(itemid) as itemid, createddate, itemsignificance, country, itemcountryline, itemtitle, synopsis, 'dailyitems' as itemtype 
-        FROM transecur.dailyitems di WHERE %s 
+
+    else:
+        query = """(SELECT TO_CHAR(itemid) as itemid, createddate, itemsignificance, country, itemcountryline, itemtitle, synopsis, 'dailyitems' as itemtype
+        FROM transecur.dailyitems di WHERE %s
         UNION
-        select doclibid as itemid, createddate, severity as itemsignificance, l.country as country, attrs.valuelabel as itemcountryline, subject as itemtitle, 
-		'' as synopsis, doctype as itemtype 
+        select doclibid as itemid, createddate, severity as itemsignificance, l.country as country, attrs.valuelabel as itemcountryline, subject as itemtitle,
+        '' as synopsis, doctype as itemtype
         from vw_documents,table(vw_documents.locations) l, table(vw_documents.nc4attrs) attrs WHERE (doctype='SEB' OR doctype='SR') %s) ORDER BY CREATEDDATE DESC"""
         query %= (' AND '.join(comps), joinVWComps(comps_vw))
 
-        #query_di_region = """(SELECT TO_CHAR(itemid) as itemid, createddate, itemsignificance, country, itemcountryline, itemtitle, synopsis, 'dailyitems' as itemtype 
+        #query_di_region = """(SELECT TO_CHAR(itemid) as itemid, createddate, itemsignificance, country, itemcountryline, itemtitle, synopsis, 'dailyitems' as itemtype
         #FROM transecur.dailyitems di WHERE %s"""
-    #query_di_region = """Select DISTINCT di.itemid FROM transecur.dailyitems di, TranSecur.itemLocations il, transecur.locations tl 
+    #query_di_region = """Select DISTINCT di.itemid FROM transecur.dailyitems di, TranSecur.itemLocations il, transecur.locations tl
     #        WHERE di.primary_id=il.dailyitems_key AND il.locationid=tl.locationid AND tl.esaregion='Middle East'"""
-    #query_vw = 	""" UNION select doclibid as itemid, createddate, severity as itemsignificance, l.country as country, attrs.valuelabel as itemcountryline, subject as itemtitle, 
-	#	'' as synopsis, doctype as itemtype 
+    #query_vw =     """ UNION select doclibid as itemid, createddate, severity as itemsignificance, l.country as country, attrs.valuelabel as itemcountryline, subject as itemtitle,
+    #   '' as synopsis, doctype as itemtype
     #    from vw_documents,table(vw_documents.locations) l, table(vw_documents.nc4attrs) attrs WHERE (doctype='SEB' OR doctype='SR') %s) ORDER BY CREATEDDATE DESC"""
 
-    #query =''.join([query_di_region, query_vw])  		 
+    #query =''.join([query_di_region, query_vw])
         #select doclibid, l.country, l.city from fusion.vw_documents, table(fusion.vw_documents.locations) l;
-		#select  DOCLIBID, l.valuelabel from fusion.vw_documents, table(fusion.vw_documents.nc4attrs) l ORDER BY UPDATEDDATE DESC 
+        #select  DOCLIBID, l.valuelabel from fusion.vw_documents, table(fusion.vw_documents.nc4attrs) l ORDER BY UPDATEDDATE DESC
 
 
 
@@ -277,16 +273,16 @@ def getRegionalObjects(post, cols=regional_cols):
     #f.write("post " + json.dumps(post))
     f.write("getallobj " + query)
     cursor.execute("""begin security_mgr.namelogin('nc4admin'); end;/""")
-    cursor.execute(query.replace('%', '%%'))    
+    cursor.execute(query.replace('%', '%%'))
     f.close()
     return makeObjs(cursor, cols), query
-	
+
 def getObjects(post, cols=latest_cols):
     comps = makeComps(post,rt_conditions_cols)
     if post.has_key('scope_limitation') and post['scope_limitation'] != 'all':
         return getLatestObjects(post, cols, comps)
     else:
-        my_dict = {}    
+        my_dict = {}
         allActivityObjs, query = getAllObjects(post, cols, comps)
         if post.has_key('incident_history') and post['incident_history'] == '1':
             for obj in allActivityObjs:
@@ -300,15 +296,15 @@ def getObjects(post, cols=latest_cols):
                 activity_id = obj['incactivityid']
                 if activity_id not in my_dict:
                     obj['out_window'] = 1
-                    f.write("outside " + str(obj['incidentid']))            
-                    f.write("\n")           
+                    f.write("outside " + str(obj['incidentid']))
+                    f.write("\n")
                 else:
-                    f.write(str(obj['incidentid']))         
-                    f.write("\n")           
+                    f.write(str(obj['incidentid']))
+                    f.write("\n")
             return allIncActivitiesObjs, query
         else:
             return allActivityObjs, query
-            
+
 def getAllObjects(post, cols, comps):
     #query = "SELECT %s FROM fusion.tbl_incactivity WHERE %s ORDER BY dateoccurred DESC, updateddate, incidentid, incactivityid"
     f = open(settings.BASE_DIR + 'StatsAllObjects.txt','w')
@@ -320,9 +316,9 @@ def getAllObjects(post, cols, comps):
     cursor = connection.cursor()
     #cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     f.write("getallobj " + query)
-    cursor.execute(query.replace('%', '%%'))    
+    cursor.execute(query.replace('%', '%%'))
 
-  
+
     f.write("getallobj " + query)
     f.close()
     return makeObjs(cursor, cols), query
@@ -338,37 +334,37 @@ def getAllIncObjects(post, cols, comps):
     cursor = connection.cursor()
     #cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     f.write(query)
-    cursor.execute(query.replace('%', '%%'))    
+    cursor.execute(query.replace('%', '%%'))
 
-  
+
     f.write("getallobj " + query)
     f.close()
     return makeObjs(cursor, cols), query
 
 def getLatestObjects(post, cols, comps):
-    query = """SELECT %s FROM fusion.tbl_incactivity acti, (%s) maxinc, fusion.tbl_incidents inci 
-WHERE inci.incidentid = acti.incidentid AND inci.incidentid = maxinc.incidentid AND (maxinc.incactivityid=acti.incactivityid 
-    AND maxinc.incidentid=acti.incidentid) AND acti.dateoccurred <= CURRENT_TIMESTAMP 
+    query = """SELECT %s FROM fusion.tbl_incactivity acti, (%s) maxinc, fusion.tbl_incidents inci
+WHERE inci.incidentid = acti.incidentid AND inci.incidentid = maxinc.incidentid AND (maxinc.incactivityid=acti.incactivityid
+    AND maxinc.incidentid=acti.incidentid) AND acti.dateoccurred <= CURRENT_TIMESTAMP
 ORDER BY acti.createddate DESC, acti.updateddate,
     acti.incactivityid"""
     inner_final = "SELECT MAX(incactivityid) incactivityid, incidentid \
  FROM fusion.tbl_incactivity WHERE %s GROUP BY incidentid"
-    
+
     inner_initial = "SELECT MIN(incactivityid) incactivityid, incidentid \
 FROM fusion.tbl_incactivity WHERE %s GROUP BY incidentid"
 
     #Check here what is selected by the User.
     if 'scope_limitation' not in post or post['scope_limitation'] == 'final':
-        inner = inner_final 
+        inner = inner_final
         inner %= ' AND '.join([c.replace("acti.","") for c in comps])
-    elif post.has_key('scope_limitation') and post['scope_limitation'] == 'initial':         
+    elif post.has_key('scope_limitation') and post['scope_limitation'] == 'initial':
         inner = inner_initial
         inner %= ' AND '.join([c.replace("acti.","") for c in comps])
-    elif post.has_key('scope_limitation') and post['scope_limitation'] == 'both':        
+    elif post.has_key('scope_limitation') and post['scope_limitation'] == 'both':
         inner_initial %= ' AND '.join([c.replace("acti.","") for c in comps])
         inner_final %= ' AND '.join([c.replace("acti.","") for c in comps])
         inner = inner_initial + " UNION " + inner_final
-        
+
     #inner %= ' AND '.join(comps)
     query %= (', '.join(['acti.'+c for c in cols]), inner)
     f = open(settings.BASE_DIR + "StatsLatestObjects.txt",'w')
@@ -486,22 +482,22 @@ def html_reg(request):
             f.write("\n NEW LINE " + str(row.itemcountryline))
             if prev_row != None and row.itemid == prev_row.itemid:
                 duplicates.append(prev_row)
-                #new_country = str(row.country) + str(prev_row.country)				  
+                #new_country = str(row.country) + str(prev_row.country)
                 #f.write("new_country " + new_country)
                 #prev_countryline = prev_row.itemcountryline if prev_row.country != prev_row.itemcountryline else ""
                 row['itemcountryline'] = row.itemcountryline if row.country != row.itemcountryline else ""
-                seperator = ' , ' if row.itemcountryline != "" else ' ' 				
+                seperator = ' , ' if row.itemcountryline != "" else ' '
                 row['itemcountryline'] = row.itemcountryline + seperator +prev_row.itemcountryline
                 f.write("\n " + str(row.itemcountryline))
-            else:				
+            else:
                 row['itemcountryline'] = row.itemcountryline if row.country != row.itemcountryline else ""
-             				
-        prev_row = row;                	 		
-        objs[index] = row				
+
+        prev_row = row;
+        objs[index] = row
 
     for x in duplicates:
         objs.remove(x)
-    f.close()	
+    f.close()
 
     return render('reporting/results_reg.html', {
         'criteria': json.dumps(post_data),
@@ -544,9 +540,9 @@ def get_images_kmz(styles):
 @login_required
 @csrf_exempt
 def csv_out(req):
-    cols = ['incidentid', 'incidentcategory', 'incidenttype', 'dateoccurred', 
-            'updateddate', 'severity', 'city', 'stateprovince', 'country', 
-            'gist', 'description', 'infosource', 'infoquality', 'latitude', 
+    cols = ['incidentid', 'incidentcategory', 'incidenttype', 'dateoccurred',
+            'updateddate', 'severity', 'city', 'stateprovince', 'country',
+            'gist', 'description', 'infosource', 'infoquality', 'latitude',
             'longitude']
     filename = 'Search-%s.csv' % datetime.now().isoformat()
     response = HttpResponse(content_type='text/csv')
@@ -592,7 +588,7 @@ def details(req):
 #     if attachments is not None and attachments != '':
 #         print type(attachments)
 #         attachments = Attachments.objects.filter(attachmentid__in=attachments.split(','))
-# WHY?: Because trying to access the incactivity.attachmentlist 
+# WHY?: Because trying to access the incactivity.attachmentlist
 #       raises an "LOB vairable no longer available" exception
 #    query = "SELECT %s FROM fusion.incactivity WHERE incactivityid=TO_TIMESTAMP('%s', 'MM/DD/YYYY HH24:MI:SS')"
 #    cursor = connection.cursor()
@@ -604,16 +600,16 @@ def details(req):
     #03.19.59.543000000
     #second = int(time[2])
     minute = int(time[1])
-    time[1] = str(minute+1) 
+    time[1] = str(minute+1)
     #if(second==59):
-    #    time[1] = str(minute+1)    
-    #    time[2] = str(01)      
-    #else:      
+    #    time[1] = str(minute+1)
+    #    time[2] = str(01)
+    #else:
     #    time[2] = str(second+1)
     newtime = '.'.join(time)
     buf[1] = newtime
     buf = ' '.join(buf)
-    
+
     query = "SELECT %s FROM fusion.tbl_incactivity WHERE incidentid='%s' AND incactivityid between TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM') and TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM')" % (','.join(cols), incidentid, incactivityid, buf)
     #query = "SELECT %s FROM fusion.tbl_incactivity WHERE incidentid='%s'" % (','.join(cols), incidentid)
     f = open("D:/django/Stats2.txt",'w')
@@ -630,7 +626,7 @@ def details(req):
         #query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)" % (','.join(ids))
         cursor.execute(attach_query % format_strings, tuple(ids))
         #f.write("\nQuery3 " + query_categories)
-        attachments = makeObjs(cursor, ['label','linkdata','mimetype']) 
+        attachments = makeObjs(cursor, ['label','linkdata','mimetype'])
     else:
         attachments = None
     #DMARK - TEST.  REMOVE NEXT LINE TO ENABLE ATTACHMENTS.
@@ -660,7 +656,7 @@ def details_reg(req):
     f.write("\nQuery1=" + query + "\nParms=" + str(parms))
     item = RowDict(cursor.fetchone(), regional_cols)
     f.write("\nItem=" + str(item))
-    
+
     #Actors
     if item['itemattributetoactor']:
         ids=tuple(item['itemattributetoactor'].split(','))
@@ -668,17 +664,17 @@ def details_reg(req):
         query_actors = "SELECT ACTORNAME FROM transecur.actors WHERE primary_id IN (%s)"
         cursor.execute(query_actors % format_strings, ids)
         f.write("\nQuery3 " + query_actors)
-        actors = makeObjs(cursor, ['ACTORNAME'])    
+        actors = makeObjs(cursor, ['ACTORNAME'])
     else:
         actors = None
-    
+
     #Categories
     ids=tuple(item['itemcategory'].split(','))
-    format_strings = ','.join(['%s'] * len(ids)) 
+    format_strings = ','.join(['%s'] * len(ids))
     query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)"
     cursor.execute(query_categories % format_strings, ids)
     f.write("\nQuery3 " + query_categories + ', ids = ' + str(ids))
-    categories = makeObjs(cursor, ['FULLYQUALIFIED'])   
+    categories = makeObjs(cursor, ['FULLYQUALIFIED'])
 
     f.close()
     #SELECt * FROM fusion.tbl_category where categoryid IN
@@ -695,7 +691,7 @@ def details_reg(req):
     #f.close()
     return render('reporting/details_reg.html', 
                               {'item': item, 'actors':actors,'categories':categories,'attachments': None})
-                               
+
 @login_required
 @csrf_exempt
 def details_reg_vw(req):
@@ -705,7 +701,7 @@ def details_reg_vw(req):
         itemid = req.GET['itemid']
     except Exception:
         return HttpResponseNotFound()
-    
+
     f = open("D:/details_reg_vw.txt",'w')
 
     #query_locations = "SELECT l.valuelabel as valuelabel FROM vw_documents, table(vw_documents.nc4attrs) l WHERE vw_documents.doclibid='%s'" % (itemid)
@@ -714,50 +710,50 @@ def details_reg_vw(req):
     #cursor.execute(query_locations)
     #objectss =  makeObjs(cursor, ['valuelabel']), query_locations
     #for object1 in objectss:
-        #f.write(object1['valuelabel']))	
-    
+        #f.write(object1['valuelabel']))
+
     # query = """SELECT vw_documents.doclibid,vw_documents.createddate,vw_documents.updateddate,vw_documents.subject,vw_documents.description,
             # vw_documents.publishdate,vw_documents.effectivedate,vw_documents.doctype,vw_documents.severity,VW_DOCATTACH.docattachid, VW_DOCATTACH.label,
-            # l.country, l.city, l.region,l.wktgeoms FROM vw_documents, table(vw_documents.locations) l, VW_DOCATTACH 
+            # l.country, l.city, l.region,l.wktgeoms FROM vw_documents, table(vw_documents.locations) l, VW_DOCATTACH
             # WHERE VW_DOCATTACH.doclibid=vw_documents.doclibid AND vw_documents.doclibid='%s'""" % (itemid)
 
     query = """SELECT vw_documents.doclibid,vw_documents.createddate,vw_documents.updateddate,vw_documents.subject,vw_documents.description,
             vw_documents.publishdate,vw_documents.effectivedate,vw_documents.doctype,vw_documents.severity,VW_DOCATTACH.docattachid, VW_DOCATTACH.label,
-            l.country, l.city, l.region,l.wktgeoms, attrs.valuelabel FROM vw_documents, table(vw_documents.locations) l,  table(vw_documents.nc4attrs) attrs, VW_DOCATTACH 
+            l.country, l.city, l.region,l.wktgeoms, attrs.valuelabel FROM vw_documents, table(vw_documents.locations) l,  table(vw_documents.nc4attrs) attrs, VW_DOCATTACH
             WHERE VW_DOCATTACH.doclibid=vw_documents.doclibid AND vw_documents.doclibid='%s'""" % (itemid)
-			
+
     #f.write(query)
     cursor.execute("""begin security_mgr.namelogin('nc4admin'); end;/""")
     cursor.execute(query)
     # item = RowDict(cursor.fetchone(), vw_cols)
     # f.write(str(item))
-	
+
     items = makeObjs(cursor, vw_cols), query
     item = None
-    secondary_location = ""  	
+    secondary_location = ""
     for item1 in items[0]:
-        if item1['country'] != item1['valuelabel']:	
-            if secondary_location != "":	
-                secondary_location = secondary_location + " , " + item1['valuelabel']			
-            else:			
-                secondary_location = item1['valuelabel']			
-        else:			
+        if item1['country'] != item1['valuelabel']:
+            if secondary_location != "":
+                secondary_location = secondary_location + " , " + item1['valuelabel']
+            else:
+                secondary_location = item1['valuelabel']
+        else:
             item = item1
-    item['secondary_location'] = secondary_location  		
-    
+    item['secondary_location'] = secondary_location
+
     #Actors
-    #ids=["'"+e+"'" for e in str(item['itemattributetoactor']).split(',')]   
+    #ids=["'"+e+"'" for e in str(item['itemattributetoactor']).split(',')]
     #query_actors = "SELECT ACTORNAME FROM transecur.actors WHERE primary_id IN (%s)" % (','.join(ids))
     #cursor.execute(query_actors)
     #f.write("\nQuery3 " + query_actors)
-    #actors = makeObjs(cursor, ['ACTORNAME'])    
-    
+    #actors = makeObjs(cursor, ['ACTORNAME'])
+
     #Categories
-    #ids=["'"+e+"'" for e in str(item['itemcategory']).split(',')]   
+    #ids=["'"+e+"'" for e in str(item['itemcategory']).split(',')]
     #query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)" % (','.join(ids))
     #cursor.execute(query_categories)
     #f.write("\nQuery3 " + query_categories)
-    #categories = makeObjs(cursor, ['FULLYQUALIFIED'])   
+    #categories = makeObjs(cursor, ['FULLYQUALIFIED'])
 
     f.close()
     #SELECt * FROM fusion.tbl_category where categoryid IN
@@ -772,15 +768,15 @@ def details_reg_vw(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render('reporting/details_reg_vw.html', 
+    return render(req, 'incidents/reporting/details_reg_vw.html',
                               {'item': item, 'actors':None,'categories':None,'attachments': None})
 
 
 @login_required
 @csrf_exempt
 def domestic_incidents(request):
-    return current_incidents(request, "country='United States'", 
-                             'Domestic-Incidents.kmz', 
+    return current_incidents(request, "country='United States'",
+                             'Domestic-Incidents.kmz',
                              'Current Domestic Incidents')
 
 @login_required
@@ -800,7 +796,7 @@ WHERE %(comps)s
 
 
 def make_kmz(placemarks, filename, name):
-    styles = set([obj['style'] for obj in placemarks])    
+    styles = set([obj['style'] for obj in placemarks])
     response = HttpResponse(content_type='application/vnd.google-earth.kmz')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
     zf, sio = get_images_kmz(styles)
@@ -809,4 +805,3 @@ def make_kmz(placemarks, filename, name):
     zf.close()
     response.write(sio.getvalue())
     return response
-    

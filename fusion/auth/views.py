@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login , logout
+from django.contrib.auth import authenticate, login, logout
 
 
 def user_login(request):
@@ -11,7 +11,8 @@ def user_login(request):
             login(request, user)
             return redirect('/reporting/')
         else:
-            return render(request, 'auth/login.html', {'error': 'Login Failed.'})
+            return render(request, 'auth/login.html',
+                          {'error': 'Login Failed.'})
 
     return render(request, 'auth/login.html')
 
