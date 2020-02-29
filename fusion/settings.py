@@ -75,7 +75,7 @@ ROOT_URLCONF = 'fusion.urls'
 
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT, 'templates').replace('\\','/'),
+    os.path.join(PROJECT_ROOT, 'templates').replace('\\', '/'),
 )
 
 TEMPLATES = [
