@@ -555,7 +555,7 @@ def csv_out(req):
     total_rows = 0
     total_incidents = 0
     for obj in objs:
-        writer.writerow([unicode(obj[i]).encode('ascii', 'backslashreplace') 
+        writer.writerow([obj[i].encode('ascii', 'backslashreplace')
                          for i in cols])
         if latest_inc != obj['incidentid']:
             latest_inc = obj['incidentid']
