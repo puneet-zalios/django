@@ -1,15 +1,16 @@
 version: "3"
 services:
   wrangler_db:
-    image: store/oracle/database-enterprise:12.2.0.1
-    container_name: wrangler-db
+    image: postgres
     restart: always
     ports:
-      - "1521:1521"
+      - "6432:5432"
     environment:
-      ORACLE_DATABASE: fusion
+      POSTGRES_DB: wrangler
+      POSTGRES_USER: fusion
+      POSTGRES_PASSWORD: secret
     volumes:
-      - wranglerdata:/ORCL
+      - wranglerdata:/var/lib/postgresql/data
 
   wrangler_backend:
     restart: always

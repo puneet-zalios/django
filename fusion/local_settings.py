@@ -5,14 +5,11 @@ TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'ORCLCDB',
-        'USER': 'sys',
-        'PASSWORD': 'Oradoc_db1',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "wrangler",
+        'USER': 'fusion',
+        'PASSWORD': "secret",
         'HOST': 'wrangler_db',
-        'PORT': '1521',
-        'OPTIONS': {
-            'mode': cx_Oracle.SYSDBA
-        },
+        'PORT': '5432'
     }
 }
