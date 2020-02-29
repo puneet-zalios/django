@@ -54,7 +54,7 @@ vw_conditions_cols = {
     'title': Col('Title', 'subject'),
     'severity': Col('Severity', 'severity'),
     'dateoc': DateCol('Date Occurred', 'CREATEDDATE'),
-    'dateexp': DateCol('Expiration Date', 'updatedby'),#This wont work with any condition
+    'dateexp': DateCol('Expiration Date', 'updatedby'), # This wont work with any condition
     'city': Col('City', 'city'),
     'cntry': Col('Country', 'valuelabel'),
     'event': Col('Special Event', 'updatedby'),
@@ -62,16 +62,23 @@ vw_conditions_cols = {
 }
 
 
-FAC_COLS = ['facilityname', 'createdby', 'createddate', 'latitude', 'longitude',
-            'street', 'city', 'county', 'district', 'stateprovince', 'region',
-            'country', 'updatedby', 'updateddate', 'facilityid']
+FAC_COLS = [
+    'facilityname', 'createdby', 'createddate', 'latitude', 'longitude',
+    'street', 'city', 'county', 'district', 'stateprovince', 'region',
+    'country', 'updatedby', 'updateddate', 'facilityid'
+]
 
-getFacilities = lambda: Facility.objects\
-    .exclude(createdby__in=('Taylor Obitz', 'Luis Garcia'),
-             createdby__contains='DEMO')\
-    .order_by('updateddate')
 
-nonNC4Facilities = lambda: getFacilities().exclude(facilityname__contains='NC4')
+def getFacilities():
+    return Facility.objects.exclude(
+        createdby__in=('Taylor Obitz', 'Luis Garcia'),
+        createdby__contains='DEMO'
+    ).order_by('updateddate')
+
+
+def nonNC4Facilities():
+    return getFacilities().exclude(facilityname__contains='NC4')
+
 
 fac_query = """
 SELECT incidentcategory, COUNT(DISTINCT incidentid) num
@@ -84,24 +91,39 @@ GROUP BY incidentcategory
 ORDER BY incidentcategory
 """
 
-latest_cols = ['incactivityid', 'incidentid', 'incidentcategory',
-               'incidenttype', 'updateddate', 'severity', 'city',
-               'stateprovince', 'country', 'gist', 'latitude', 'longitude']
+latest_cols = [
+    'incactivityid',  'incidentid',  'incidentcategory', 'incidenttype',
+    'updateddate',  'severity',  'city', 'stateprovince',  'country',  'gist',
+    'latitude',  'longitude'
+]
 
-vw_cols = ['doclibid','createddate','updateddate','subject','description',
-                    'publishdate','effectivedate','doctype','severity','docattachid','label','country','city','region','wktgeoms','valuelabel']
-regional_cols = ['itemid','createddate','itemsignificance','country','itemcountryline',
-                    'itemtitle','synopsis','itemexpirationdate','itemevent','city','latitude',
-                    'longitude','region','itemsummary','itemtext','itemattributetoactor','itemcategory','itemassessment']
-regional_cols_only = ['itemid','createddate','itemsignificance','country','itemcountryline',
-                    'itemtitle','synopsis', 'itemtype']
+vw_cols = [
+    'doclibid', 'createddate', 'updateddate', 'subject', 'description',
+    'publishdate', 'effectivedate', 'doctype', 'severity', 'docattachid',
+    'label', 'country', 'city', 'region', 'wktgeoms', 'valuelabel'
+]
+
+regional_cols = [
+    'itemid', 'createddate', 'itemsignificance', 'country', 'itemcountryline',
+    'itemtitle', 'synopsis', 'itemexpirationdate', 'itemevent', 'city',
+    'latitude', 'longitude', 'region', 'itemsummary', 'itemtext',
+    'itemattributetoactor', 'itemcategory', 'itemassessment'
+]
+
+regional_cols_only = [
+    'itemid', 'createddate', 'itemsignificance', 'country', 'itemcountryline',
+    'itemtitle', 'synopsis',  'itemtype'
+]
 
 regional_cols_count_only = ['count(*)']
 
 kmz_images_path = 'D:/django/fusion/'
-kmz_cols = ['description', 'severity', 'incidenttype', 'incidentcategory',
-            'latitude', 'longitude', 'dateoccurred', 'gist', 'street', 'city',
-            'stateprovince', 'postal', 'country', 'infosource']
+kmz_cols = [
+    'description', 'severity', 'incidenttype', 'incidentcategory', 'latitude',
+    'longitude', 'dateoccurred', 'gist', 'street', 'city', 'stateprovince',
+    'postal', 'country', 'infosource'
+]
+
 
 def makeCSVResponse(rows, filename, cols=FAC_COLS):
     response = HttpResponse(content_type='text/csv')
@@ -159,6 +181,7 @@ class PostRow(object):
 def makeRow(post, id):
     return PostRow(post, id)
 
+
 def makeComps(post,conditions_cols):
     l=[]
     for id in post['ids'].split(','):
@@ -172,6 +195,7 @@ def makeComps(post,conditions_cols):
     elif post['searchtype']!='regional'and post.has_key('nc4') and post['nc4'] == '1':
         l.append("acti.updatedby LIKE 'NC4%'")
     return l
+
 
 class FormattedDateTime(datetime):
     def __new__(self, dt):
@@ -210,11 +234,13 @@ class RowDict(dict):
 def makeObjs(cursor, cols):
     return [RowDict(row, cols) for row in cursor]
 
+
 def joinVWComps(comps):
     if not comps:
         return ''
     else:
         return  ' AND ' + ' AND '.join(comps)
+
 
 def getRegionalObjects(post, cols=regional_cols):
     comps = makeComps(post,regional_conditions_cols)
@@ -277,6 +303,7 @@ def getRegionalObjects(post, cols=regional_cols):
     f.close()
     return makeObjs(cursor, cols), query
 
+
 def getObjects(post, cols=latest_cols):
     comps = makeComps(post,rt_conditions_cols)
     if post.has_key('scope_limitation') and post['scope_limitation'] != 'all':
@@ -305,6 +332,7 @@ def getObjects(post, cols=latest_cols):
         else:
             return allActivityObjs, query
 
+
 def getAllObjects(post, cols, comps):
     #query = "SELECT %s FROM fusion.tbl_incactivity WHERE %s ORDER BY dateoccurred DESC, updateddate, incidentid, incactivityid"
     f = open(settings.BASE_DIR + 'StatsAllObjects.txt','w')
@@ -323,6 +351,7 @@ def getAllObjects(post, cols, comps):
     f.close()
     return makeObjs(cursor, cols), query
 
+
 def getAllIncObjects(post, cols, comps):
     #query = "SELECT %s FROM fusion.tbl_incactivity WHERE %s ORDER BY dateoccurred DESC, updateddate, incidentid, incactivityid"
     f = open(settings.BASE_DIR + 'StatsAllINCObjects.txt','w')
@@ -340,6 +369,7 @@ def getAllIncObjects(post, cols, comps):
     f.write("getallobj " + query)
     f.close()
     return makeObjs(cursor, cols), query
+
 
 def getLatestObjects(post, cols, comps):
     query = """SELECT %s FROM fusion.tbl_incactivity acti, (%s) maxinc, fusion.tbl_incidents inci
@@ -427,7 +457,8 @@ def search(request):
         for id in request.POST['ids'].split(','):
             if not request.POST.get('field'+id, None):
                 # Possible XSS attack but it's internal (bad assumption?)
-                return render(request, 'incidents/reporting/search.html', request.POST)
+                return render(request, 'incidents/reporting/search.html',
+                              request.POST)
         return types[request.POST['type']](request)
 
 
@@ -635,15 +666,19 @@ def details(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render(req, 'incidents/reporting/details.html',
-                              {'incident': incident, 'attachments': attachments,
-                               'incactivityid': incactivityid})
+    return render(
+        req,
+        'incidents/reporting/details.html',
+        {
+            'incident': incident,
+            'attachments': attachments,
+            'incactivityid': incactivityid
+        })
 
 
 @login_required
 @csrf_exempt
 def details_reg(req):
-
     cursor = connection.cursor()
     try:
         itemid = req.GET['itemid']
@@ -692,6 +727,7 @@ def details_reg(req):
     #f.close()
     return render(req, 'incidents/reporting/details_reg.html',
                               {'item': item, 'actors':actors,'categories':categories,'attachments': None})
+
 
 @login_required
 @csrf_exempt
@@ -769,16 +805,24 @@ def details_reg_vw(req):
     #f = open("c:/www/Stats2.txt",'w')
     #f.write(req.GET['incactid'])
     #f.close()
-    return render(req, 'incidents/reporting/details_reg_vw.html',
-                              {'item': item, 'actors':None,'categories':None,'attachments': None})
+    return render(
+        req,
+        'incidents/reporting/details_reg_vw.html',
+        {
+            'item': item,
+            'actors':None,
+            'categories':None,
+            'attachments': None
+        })
 
 
 @login_required
 @csrf_exempt
 def domestic_incidents(request):
-    return current_incidents(request, "country='United States'",
-                             'Domestic-Incidents.kmz',
-                             'Current Domestic Incidents')
+    return current_incidents(
+        request, "country='United States'", 'Domestic-Incidents.kmz',
+        'Current Domestic Incidents')
+
 
 @login_required
 def current_incidents(request, comps, filename, title, cols=kmz_cols):
