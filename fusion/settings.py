@@ -64,13 +64,13 @@ SECRET_KEY = 'p6!&o$3k43()qv9ik44m*-y1-6pn_792^&k1eoj!*2awz&(bi7'
 
 # List of callables that know how to import templates from various sources.
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-)
+]
+
 ROOT_URLCONF = 'fusion.urls'
 
 
