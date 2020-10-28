@@ -1,12 +1,25 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block title %}Search Incidents{% endblock %}
 
-{% block headers %}
-<script type="text/javascript" src="/script/prototype.js"></script>
-<script type="text/javascript" src="/script/calendar.js"></script>
-<script type="text/javascript" src="/script/calendar-en.js"></script>
-<script type="text/javascript" src="/script/calendar-setup.js"></script>
+{% block css %}
+<style type="text/css">
+@import url({% static 'css/calendar-win2k-1.css' %});
+</style>
+<style type="text/css">
+  .nottoggle:hover {
+    cursor: pointer;
+  }
+</style>
+{% endblock css %}
+
+{% block js %}
+<script type="text/javascript" src="{% static 'js/prototype.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/calendar.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/calendar-en.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/calendar-setup.js' %}"></script>
 <script type="text/javascript">
   op_list = [['eq', 'Equal To'], ['lt', 'Less Than'], 
              ['lte', 'Less Equal To'], ['gt', 'Greater Than'], 
@@ -24,13 +37,7 @@
               ['source', 'Confirmation Source'] , ['quality', 'Confirmation Quality'],
               ['program', 'Special Event']];
 </script>
-<script type="text/javascript" src="/script/reporting.js"></script>
-<style type="text/css">@import url(/style/calendar-win2k-1.css);</style>
-<style type="text/css">
-  .nottoggle:hover {
-    cursor: pointer;
-  }
-</style>
+<script type="text/javascript" src="{% static 'js/reporting.js' %}"></script>
 <script type="text/javascript">
   function changeDisplay() {
 	if(this.formoptions.style.visibility=="hidden"){
@@ -93,9 +100,7 @@
   
   
 </script>
-
-
-{% endblock headers %}
+{% endblock js %}
 
 {% block content %}
 <form id="incsearch" action="." method="post">
@@ -136,4 +141,4 @@
   </ul>
   <p>-Cristian</p>
 </div>
-{% endblock %}
+{% endblock content %}

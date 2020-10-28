@@ -1,19 +1,20 @@
+{% load static %}
+
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <title>{% block title %}{% endblock %}</title>
-  <link rel="stylesheet" type="text/css" href="/style/main.css" />
-  <script src="/script/jquery-1.12.2.min.js"></script>
-  <script type="text/javascript">
-  var $j = jQuery.noConflict(); // $j is now an alias to the jQuery function; creating the new alias is optional.
-  </script>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+  {% block css %}
+  {% endblock %}
+
   {% block headers %}{% endblock %}
 </head>
 <body>
   <div id="header">
-      <img src="/images/logo_nc4.gif" alt="NC4 Logo" />
+      <img src="{% static 'images/logo_nc4.gif' %}" alt="NC4 Logo" />
   </div>
   <div id="side">
     <ul>
@@ -27,5 +28,11 @@
   <div id="main">
     {% block content %}{% endblock %}
   </div>
+  <script src="{% static 'js/jquery-1.12.2.min.js' %}"></script>
+  <script type="text/javascript">
+    var $j = jQuery.noConflict(); // $j is now an alias to the jQuery function; creating the new alias is optional.
+  </script>
+  {% block js %}
+  {% endblock %}
 </body>
 </html>

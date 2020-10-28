@@ -103,7 +103,7 @@ div#announcement ul {
 div#announcement ul li {
     padding: 0.5em 0.5em 0.5em 3em;
     margin: 1em 0.5em 1.5em;
-    background-image: url(/images/asterisk.png);
+    background-image: url('../images/asterisk.png');
     background-position: top left;
     background-repeat: no-repeat;
 }

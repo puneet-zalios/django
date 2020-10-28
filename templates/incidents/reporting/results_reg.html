@@ -2,13 +2,15 @@
 
 {% block title %}Regional Results{% endblock %}
 
-{% block headers %}
+{% block css %}
 <style type="text/css">
   .off {
      background-color: #CCC;
   }
 </style>
+{% endblock %}
 
+{% block js %}
 <script type="text/javascript">
 $j(document).ready(function() {
   $j('#refine_link').click(function(){
@@ -16,7 +18,7 @@ $j(document).ready(function() {
   })
 });
 </script>
-{% endblock headers %}
+{% endblock js %}
 
 {% block sidebar %}
 <li><a href="#" id="refine_link">Refine Current Search</a></li>

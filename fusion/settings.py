@@ -111,10 +111,7 @@ except ImportError:
 # Static files (CSS, JavaScript, Images)
 
 STATICFILES_DIRS = [
-    os.path.join(PROJECT_ROOT, "fusion", "images"),
-    os.path.join(PROJECT_ROOT, "fusion", "icons"),
-    os.path.join(PROJECT_ROOT, "fusion", "scripts"),
-    os.path.join(PROJECT_ROOT, "fusion", "styles"),
+    os.path.join(PROJECT_ROOT, "fusion", "static"),
 ]
 
 STATICFILES_FINDERS = [
