@@ -21,7 +21,7 @@
   <dd>{{item.itemtitle|escape}}</dd>
   <dt>Item Summary</dt>
   <dd>{{item.itemsummary|escape}}</dd>
-  <dt>Item Body>
+  <dt>Item Body</dt>
   <dd>{{item.itemtext}} </dd>
 {% else %}
   <dt>AB/GFP</dt>
@@ -40,7 +40,7 @@
 
   <dt>Country</dt>
   <dd>{{item.country|escape}}</dd>
-  
+
   <dt>Secondary Locations</dt>
   <dd>{{item.itemcountryline|escape}}</dd>
 
@@ -55,21 +55,21 @@
 
   <dt>Region</dt>
   <dd>{{item.region|escape}}</dd>
-  
+
 
   <dt>Actors</dt>
-  <dd>  
+  <dd>
   {% for actor in actors %}
    {{actor.ACTORNAME}}</br>
   {% endfor %}
-  </dd> 
+  </dd>
 
   <dt>Categories</dt>
-  <dd>  
+  <dd>
   {% for category in categories %}
    {{category.FULLYQUALIFIED}}</br>
   {% endfor %}
-  </dd> 
-  
+  </dd>
+
 {% endif %}
 {% endblock content %}

@@ -41,39 +41,39 @@ $j(document).ready(function() {
   <td>{{row.itemsignificance}}</td>
   <td>{{row.country}}</td>
   <td>{{row.itemcountryline|escape}}</td>
-  
+
 {% if row.itemtype == 'SR' or row.itemtype == 'SEB'%}
-	  <td>
-		{{row.itemtype}}
-	  </td>	
-	  <td>{{row.itemtitle|escape}}</td>
-	<td>
+      <td>
+        {{row.itemtype}}
+      </td>
+      <td>{{row.itemtitle|escape}}</td>
+    <td>
     <form action="./details_vw" method="get">
       <div>
-	<input type="hidden" name="itemid" value="{{row.itemid}}" />
-	<input type="submit" value="Details" />
+    <input type="hidden" name="itemid" value="{{row.itemid}}" />
+    <input type="submit" value="Details" />
       </div>
     </form>
   </td>
-	  
+
 {% else %}
-  
-	{% if row.itemtitle %}
-	  <td>
-		{{"AB"}}s
-	  </td>
-	  <td>{{row.itemtitle|escape}}</td>
-	{% else %}
-	  <td>
-		{{"GFP"}}
-	  </td>	
-	  <td>{{row.synopsis|escape}}</td>
-	{% endif %}
-	<td>
+
+    {% if row.itemtitle %}
+      <td>
+        {{"AB"}}s
+      </td>
+      <td>{{row.itemtitle|escape}}</td>
+    {% else %}
+      <td>
+        {{"GFP"}}
+      </td>
+      <td>{{row.synopsis|escape}}</td>
+    {% endif %}
+    <td>
       <form action="./details" method="get">
       <div>
-	  <input type="hidden" name="itemid" value="{{row.itemid}}" />
-	  <input type="submit" value="Details" />
+      <input type="hidden" name="itemid" value="{{row.itemid}}" />
+      <input type="submit" value="Details" />
       </div>
       </form>
     </td>

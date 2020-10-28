@@ -19,9 +19,9 @@
 <script type="text/javascript" src="{% static 'js/calendar-en.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/calendar-setup.js' %}"></script>
 <script type="text/javascript">
-  op_list = [['eq', 'Equal To'], ['lt', 'Less Than'], 
-             ['lte', 'Less Equal To'], ['gt', 'Greater Than'], 
-             ['gte', 'Greater Equal To'], 
+  op_list = [['eq', 'Equal To'], ['lt', 'Less Than'],
+             ['lte', 'Less Equal To'], ['gt', 'Greater Than'],
+             ['gte', 'Greater Equal To'],
              ['con', 'Contains'], ['strt', 'Start With'],
              ['in', 'In']];
 
@@ -37,19 +37,19 @@
             //  ['category', 'Category'], //ITEMCATEGORY
             //  ['actor', 'Actor'],
               ['body', 'Body'], //ItemText
-			]; //ItemAttributeToActor
+            ]; //ItemAttributeToActor
 </script>
 <script type="text/javascript" src="{% static 'js/reporting_reg.js' %}"></script>
 
 <script type="text/javascript">
   function changeDisplay() {
-	if(this.formoptions.style.visibility=="hidden"){
-		this.formoptions.style.visibility = 'visible';
-		document.getElementById('demo').innerHTML = '[-]';
-	} else {
-		this.formoptions.style.visibility = 'hidden';
-		document.getElementById('demo').innerHTML = '[+]';
-	}
+    if(this.formoptions.style.visibility=="hidden"){
+        this.formoptions.style.visibility = 'visible';
+        document.getElementById('demo').innerHTML = '[-]';
+    } else {
+        this.formoptions.style.visibility = 'hidden';
+        document.getElementById('demo').innerHTML = '[+]';
+    }
  }
 
   function addOp(div) {
@@ -68,15 +68,15 @@
       if (criteria['op' + i] === 'in') {
         $j('#field' + i).html('');
         for (j=0; j < criteria['field' + i].length; j++) {
-          $j('#field' + i).append($j("<option></option>").attr("value", j).text(criteria['field' + i][j])); 
+          $j('#field' + i).append($j("<option></option>").attr("value", j).text(criteria['field' + i][j]));
         }
       }
-      
+
       $j('#not' + i).val(criteria['not' + i]);
       if (criteria['not' + i] == '1') {
         $j('#not' + i).parent().css('color', 'red').css('cursor', 'default').css('font-weight', 'bold');
       }
-      
+
       $j('#cs' + i).val(criteria['cs' + i]);
       if (criteria['cs' + i] == '1') {
         $j('#cs' + i).parent().css('color', 'red').css('cursor', 'default').css('font-weight', 'bold');
@@ -103,7 +103,7 @@
     <input type="submit" name="type" value="Search" />
   </div>
   </br>
-  <!--span id="demo" onclick="changeDisplay()" >[+]</span> <b>Additional Search Options</b> 
+  <!--span id="demo" onclick="changeDisplay()" >[+]</span> <b>Additional Search Options</b>
   <div id="formoptions" style="visibility:hidden">
       <input type="checkbox" name="statistics_only" value="1" />Statistics Only
 

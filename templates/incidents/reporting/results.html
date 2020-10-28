@@ -48,9 +48,9 @@ $j(document).ready(function() {
   <td>
     <form action="./details" method="get">
       <div>
-	<input type="hidden" name="incactid" value="{{ row.incactivityid|date:"d-M-y h.i.s A"|upper }}" />
-	<input type="hidden" name="incidentid" value="{{row.incidentid}}" />
-	<input type="submit" value="Details" />
+    <input type="hidden" name="incactid" value="{{ row.incactivityid|date:"d-M-y h.i.s A"|upper }}" />
+    <input type="hidden" name="incidentid" value="{{row.incidentid}}" />
+    <input type="submit" value="Details" />
       </div>
     </form>
   </td>

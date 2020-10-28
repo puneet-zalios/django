@@ -19,7 +19,7 @@
 
   <dt>Category</dt>
   <dd>{{incident.incidentcategory|escape}}</dd>
-  
+
   <dt>Type</dt>
   <dd>{{incident.incidenttype|escape}}</dd>
 
@@ -43,28 +43,28 @@
 
   <dt>County</dt>
   <dd>{{incident.county|escape}}</dd>
-  
+
   <dt>State/Province</dt>
   <dd>{{incident.stateprovince|escape}}</dd>
-  
+
   <dt>ZIP/Postal Code</dt>
   <dd>{{incident.postal|escape}}</dd>
-  
+
   <dt>Latitude</dt>
   <dd>{{incident.latitude|escape}}</dd>
-  
+
   <dt>Longitude</dt>
   <dd>{{incident.longitude|escape}}</dd>
-  
+
   <dt>Approximate Location</dt>
   <dd>
     {% ifequal incident.approximate 1 %}
-	Yes
+    Yes
     {% endifequal %}
     {% ifequal incident.approximate 0 %}
-	No
+    No
     {% endifequal %}
-  
+
   </dd>
 
   <dt>Synopsis(Gist)</dt>
@@ -72,13 +72,13 @@
 
   <dt>Description</dt>
   <dd>{{incident.description|escape}}</dd>
-  
+
   <dt>Internal Comments</dt>
   <dd>{{incident.conversationlog}}</dd>
 
   <dt>Special Event</dt>
   <dd>{{incident.program|escape}}</dd>
-  
+
 
   <dt>Notification</dt>
   <dd>{{incident.notifyrule|escape}}</dd>

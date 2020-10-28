@@ -21,15 +21,15 @@
 <script type="text/javascript" src="{% static 'js/calendar-en.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/calendar-setup.js' %}"></script>
 <script type="text/javascript">
-  op_list = [['eq', 'Equal To'], ['lt', 'Less Than'], 
-             ['lte', 'Less Equal To'], ['gt', 'Greater Than'], 
-             ['gte', 'Greater Equal To'], 
+  op_list = [['eq', 'Equal To'], ['lt', 'Less Than'],
+             ['lte', 'Less Equal To'], ['gt', 'Greater Than'],
+             ['gte', 'Greater Equal To'],
              ['con', 'Contains'], ['strt', 'Start With'],
              ['in', 'In']];
 
   cat_list = [['inc', 'Incident Category'], ['inctype', 'Incident Type'],
               ['dateoc', 'Date Occurred'],
-              ['update', 'Updated Date'], ['city', 'City'], 
+              ['update', 'Updated Date'], ['city', 'City'],
               ['cnty', 'County'], ['st', 'State'],
               ['cntry', 'Country'], ['reg', 'Region'],
               ['sev', 'Severity Level'], ['intcom', 'Internal Comments'],
@@ -40,13 +40,13 @@
 <script type="text/javascript" src="{% static 'js/reporting.js' %}"></script>
 <script type="text/javascript">
   function changeDisplay() {
-	if(this.formoptions.style.visibility=="hidden"){
-		this.formoptions.style.visibility = 'visible';
-		document.getElementById('demo').innerHTML = '[-]';
-	} else {
-		this.formoptions.style.visibility = 'hidden';
-		document.getElementById('demo').innerHTML = '[+]';
-	}
+    if(this.formoptions.style.visibility=="hidden"){
+        this.formoptions.style.visibility = 'visible';
+        document.getElementById('demo').innerHTML = '[-]';
+    } else {
+        this.formoptions.style.visibility = 'hidden';
+        document.getElementById('demo').innerHTML = '[+]';
+    }
  }
 
   function addOp(div) {
@@ -65,15 +65,15 @@
       if (criteria['op' + i] === 'in') {
         $j('#field' + i).html('');
         for (j=0; j < criteria['field' + i].length; j++) {
-          $j('#field' + i).append($j("<option></option>").attr("value", j).text(criteria['field' + i][j])); 
+          $j('#field' + i).append($j("<option></option>").attr("value", j).text(criteria['field' + i][j]));
         }
       }
-      
+
       $j('#not' + i).val(criteria['not' + i]);
       if (criteria['not' + i] == '1') {
         $j('#not' + i).parent().css('color', 'red').css('cursor', 'default').css('font-weight', 'bold');
       }
-      
+
       $j('#cs' + i).val(criteria['cs' + i]);
       if (criteria['cs' + i] == '1') {
         $j('#cs' + i).parent().css('color', 'red').css('cursor', 'default').css('font-weight', 'bold');
@@ -87,9 +87,9 @@
       $j("input[name='statistics_only']").prop('checked', criteria['statistics_only'] == 1);
       $j("input[name='incident_history']").prop('checked', criteria['incident_history'] == 1);
       //$j("input[name='scope_limitation']").val() =  criteria['scope_limitation'];
-	  //$('input[name=foo]').attr('checked', true);
-	  //$('input[name=foo]').
-	  //alert(criteria['scope_limitation']);
+      //$('input[name=foo]').attr('checked', true);
+      //$('input[name=foo]').
+      //alert(criteria['scope_limitation']);
     }
   });
   {% else %}
@@ -97,8 +97,6 @@
     addRow();
   });
   {% endif %}
-  
-  
 </script>
 {% endblock js %}
 
@@ -113,18 +111,18 @@
     <input type="submit" name="type" value="Search" />
   </div>
   </br>
-  <span id="demo" onclick="changeDisplay()" >[+]</span> <b>Additional Search Options</b> 
+  <span id="demo" onclick="changeDisplay()" >[+]</span> <b>Additional Search Options</b>
   <div id="formoptions" style="visibility:hidden">
     <input type="checkbox" name="latest" value="1" />Only Latest Report
     <input type="checkbox" name="nc4" value="1" checked />NC4 Only
     <input type="checkbox" name="cybertech" value="1" />CyberTech Only
-    <input type="checkbox" name="both" value="1" />NC4 & CyberTech
-	</br>
+    <input type="checkbox" name="both" value="1" />NC4 &amp; CyberTech
+    </br>
     <input type="radio" name="scope_limitation" value="initial" />Only Initial Report
     <input type="radio" name="scope_limitation" value="final" />Only Latest Report
-    <input type="radio" name="scope_limitation" value="both" />Both Initial & Latest Report
+    <input type="radio" name="scope_limitation" value="both" />Both Initial &amp; Latest Report
     <input type="radio" name="scope_limitation" value="all" />All
-	</br>
+    </br>
     <input type="checkbox" name="statistics_only" value="1" />Statistics Only
     <input type="checkbox" name="incident_history" value="1" />Incident History
 

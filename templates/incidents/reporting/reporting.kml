@@ -20,7 +20,7 @@
             <td><b>Where:</b></td>
             <td>
               {{ placemark.street }}<br />
-              {{ placemark.city }}, {{ placemark.stateprovince }} 
+              {{ placemark.city }}, {{ placemark.stateprovince }}
               {{ placemark.postal }}<br />
               {{ placemark.coutry }}
             </td>
