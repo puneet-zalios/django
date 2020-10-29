@@ -3,6 +3,8 @@ import os
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                             os.pardir))
+BASE_DIR = PROJECT_ROOT
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )

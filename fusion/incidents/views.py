@@ -251,7 +251,7 @@ def getRegionalObjects(post, cols=regional_cols):
     #post['vw']='true';
     comps_vw = makeComps(post,vw_conditions_cols)
     dict = {'itemtitle': 'subject', 'ItemSignificance': 'severity', 'CREATEDDATE': 'CREATEDDATE'}
-    f = open(settings.BASE_DIR + 'RegionalAllObjects.txt','w')
+    f = open(os.path.join(settings.BASE_DIR, 'RegionalAllObjects.txt'), 'w')
     #f.write("getallobj " + comps[0])
     has_region = False
     for compp in comps:
@@ -321,7 +321,8 @@ def getObjects(post, cols=latest_cols):
                 my_dict[activity_id]=1
 
             allIncActivitiesObjs, query = getAllIncObjects(post, cols, comps)
-            f = open(settings.BASE_DIR + 'DifferentialActivities.txt','w')
+            f = open(os.path.join(settings.BASE_DIR,
+                                  'DifferentialActivities.txt'), 'w')
 
             for obj in allIncActivitiesObjs:
                 activity_id = obj['incactivityid']
@@ -339,8 +340,8 @@ def getObjects(post, cols=latest_cols):
 
 def getAllObjects(post, cols, comps):
     #query = "SELECT %s FROM fusion.tbl_incactivity WHERE %s ORDER BY dateoccurred DESC, updateddate, incidentid, incactivityid"
-    f = open(settings.BASE_DIR + 'StatsAllObjects.txt','w')
     query = "SELECT %s FROM fusion.tbl_incactivity acti, fusion.tbl_incidents inci WHERE inci.incidentid = acti.incidentid AND %s ORDER BY inci.createddate DESC, acti.updateddate DESC, acti.incactivityid DESC"
+    f = open(os.path.join(settings.BASE_DIR, 'StatsAllObjects.txt'), 'w')
     #.write("getallobj " + cols)
 
     query %= (', '.join(['acti.'+c+" "+c for c in cols]), ' AND '.join(comps))
@@ -358,8 +359,8 @@ def getAllObjects(post, cols, comps):
 
 def getAllIncObjects(post, cols, comps):
     #query = "SELECT %s FROM fusion.tbl_incactivity WHERE %s ORDER BY dateoccurred DESC, updateddate, incidentid, incactivityid"
-    f = open(settings.BASE_DIR + 'StatsAllINCObjects.txt','w')
     query = "SELECT %s FROM fusion.tbl_incactivity acti_outer, fusion.tbl_incidents inci  WHERE inci.incidentid = acti_outer.incidentid AND acti_outer.INCIDENTID IN (SELECT DISTINCT(INCIDENTID) FROM fusion.tbl_incactivity acti WHERE  %s ) ORDER BY inci.createddate DESC, acti_outer.updateddate DESC, acti_outer.incactivityid DESC"
+    f = open(os.path.join(settings.BASE_DIR, 'StatsAllINCObjects.txt'), 'w')
     #.write("getallobj " + cols)
 
     query %= (', '.join(['acti_outer.'+c+" "+c for c in cols]), ' AND '.join(comps))
@@ -401,7 +402,7 @@ FROM fusion.tbl_incactivity WHERE %s GROUP BY incidentid"
 
     #inner %= ' AND '.join(comps)
     query %= (', '.join(['acti.'+c for c in cols]), inner)
-    f = open(settings.BASE_DIR + "StatsLatestObjects.txt",'w')
+    f = open(os.path.join(settings.BASE_DIR, "StatsLatestObjects.txt"), 'w')
     f.write("getlatestobj " + query)
     cursor = connection.cursor()
     #cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
@@ -512,7 +513,7 @@ def html_reg(request):
     total_rows = 0
     total_incidents = 0
     duplicates = []
-    f = open(settings.BASE_DIR + 'Django_values.txt','w')
+    f = open(os.path.join(settings.BASE_DIR, 'Django_values.txt'), 'w')
     for index, row in enumerate(objs):
         if (row.itemtype=='SEB' or row.itemtype=='SR') :
             f.write("\n NEW LINE " + str(row.itemcountryline))
