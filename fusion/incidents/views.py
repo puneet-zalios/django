@@ -186,13 +186,17 @@ def makeComps(post,conditions_cols):
     l=[]
     for id in post['ids'].split(','):
         row = makeRow(post, id)
-        if (conditions_cols.has_key(row['type'])):
-            l.append(make_comp(row,post,conditions_cols))
+        if row['type'] in conditions_cols:
+            l.append(make_comp(row, post, conditions_cols))
     #l = [make_comp(makeRow(post, id),post,conditions_cols) for id in post['ids'].split(',')]
 
-    if post['searchtype']!='regional' and post.has_key('cybertech') and post['cybertech'] == '1':
+    if (post['searchtype'] != 'regional' and
+            'cybertech' in post and
+            post['cybertech'] == '1'):
         l.append("acti.updatedby LIKE 'CyberTech%'")
-    elif post['searchtype']!='regional'and post.has_key('nc4') and post['nc4'] == '1':
+    elif (post['searchtype'] != 'regional' and
+            'nc4' in post and
+            post['nc4'] == '1'):
         l.append("acti.updatedby LIKE 'NC4%'")
     return l
 
@@ -305,13 +309,13 @@ def getRegionalObjects(post, cols=regional_cols):
 
 
 def getObjects(post, cols=latest_cols):
-    comps = makeComps(post,rt_conditions_cols)
-    if post.has_key('scope_limitation') and post['scope_limitation'] != 'all':
+    comps = makeComps(post, rt_conditions_cols)
+    if 'scope_limitation' in post and post['scope_limitation'] != 'all':
         return getLatestObjects(post, cols, comps)
     else:
         my_dict = {}
         allActivityObjs, query = getAllObjects(post, cols, comps)
-        if post.has_key('incident_history') and post['incident_history'] == '1':
+        if 'incident_history' in post and post['incident_history'] == '1':
             for obj in allActivityObjs:
                 activity_id = obj['incactivityid']
                 my_dict[activity_id]=1
@@ -479,7 +483,7 @@ def html(request):
         total_rows += 1
 
     post_data = {}
-    for key, value in request.POST.iterlists():
+    for key, value in request.POST.lists():
         if len(value) == 1:
             post_data[key] = value[0]
         if len(value) > 1:
@@ -496,7 +500,7 @@ def html(request):
 @csrf_exempt
 def html_reg(request):
     post_data = {}
-    for key, value in request.POST.iterlists():
+    for key, value in request.POST.lists():
         if len(value) == 1:
             post_data[key] = value[0]
         if len(value) > 1:
