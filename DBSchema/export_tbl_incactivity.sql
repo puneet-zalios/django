@@ -1,0 +1,477 @@
+--------------------------------------------------------
+--  File created - Wednesday-October-28-2020   
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Table TBL_INCACTIVITY
+--------------------------------------------------------
+
+  CREATE TABLE "FUSION"."TBL_INCACTIVITY" 
+   (	"INCIDENTID" VARCHAR2(128 CHAR), 
+	"INCACTIVITYID" TIMESTAMP (6) DEFAULT SYSTIMESTAMP, 
+	"UPDATEDDATE" TIMESTAMP (6) DEFAULT SYSTIMESTAMP, 
+	"UPDATEDBY" VARCHAR2(256 CHAR), 
+	"CREATEDDATE" TIMESTAMP (6) DEFAULT SYSTIMESTAMP, 
+	"CREATEDBY" VARCHAR2(256 CHAR), 
+	"INCIDENTCATEGORY" VARCHAR2(192 CHAR), 
+	"INCIDENTTYPE" VARCHAR2(256 CHAR), 
+	"LANDMARKFACILITY" VARCHAR2(512 CHAR), 
+	"STREET" VARCHAR2(400 CHAR), 
+	"BUILDING" VARCHAR2(255 CHAR), 
+	"CROSSSTREET" VARCHAR2(255 CHAR), 
+	"DISTRICT" VARCHAR2(128 CHAR), 
+	"CITY" VARCHAR2(64 CHAR), 
+	"COUNTY" VARCHAR2(128 CHAR), 
+	"STATEPROVINCE" VARCHAR2(64 CHAR), 
+	"POSTAL" VARCHAR2(32 CHAR), 
+	"REGION" VARCHAR2(64 CHAR), 
+	"COUNTRY" VARCHAR2(64 CHAR), 
+	"LONGITUDE" FLOAT(126) DEFAULT 0.000000, 
+	"LATITUDE" FLOAT(126) DEFAULT 0.000000, 
+	"APPROXIMATE" NUMBER(3,0) DEFAULT 0, 
+	"ACTIVITYSTATUS" VARCHAR2(96 CHAR) DEFAULT 'OPEN', 
+	"SEVERITY" VARCHAR2(96 CHAR), 
+	"DATEOCCURRED" TIMESTAMP (6) DEFAULT SYSTIMESTAMP, 
+	"PROGRAM" VARCHAR2(512 CHAR), 
+	"INFOSOURCE" VARCHAR2(256 CHAR), 
+	"INFOQUALITY" VARCHAR2(256 CHAR), 
+	"GIST" VARCHAR2(400 CHAR), 
+	"DESCRIPTION" CLOB, 
+	"CHANNEL" VARCHAR2(32 CHAR), 
+	"NOTIFYRULE" VARCHAR2(80 CHAR) DEFAULT 'Use Perimeter', 
+	"ASSIGNEDUNIT" VARCHAR2(256 CHAR), 
+	"LEADAGENCY" VARCHAR2(512 CHAR), 
+	"UPDATEFLAG" CHAR(4 CHAR) DEFAULT '4', 
+	"ETEAMFLAG" CHAR(4 CHAR), 
+	"CONVERSATIONLOG" CLOB, 
+	"ATTACHMENTLIST" CLOB, 
+	"COMMENTFLAG" NUMBER(5,0) DEFAULT 0, 
+	"NC4LEVEL" NUMBER(4,0), 
+	"CREATEDORG" VARCHAR2(128 CHAR), 
+	"UPDATEDORG" VARCHAR2(128 CHAR), 
+	"SENSITIVITY" VARCHAR2(96 CHAR), 
+	"SHOULDNOTIFYONRELINCS" NUMBER, 
+	"FACILITYTYPE" VARCHAR2(32 CHAR), 
+	"FACILITYID" VARCHAR2(32 CHAR), 
+	"LATLONGONLY" NUMBER(1,0), 
+	"WKTGEOMS" VARCHAR2(4000 CHAR)
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" 
+ LOB ("DESCRIPTION") STORE AS BASICFILE (
+  TABLESPACE "FUSION" ENABLE STORAGE IN ROW CHUNK 8192 PCTVERSION 10
+  NOCACHE LOGGING 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)) 
+ LOB ("CONVERSATIONLOG") STORE AS BASICFILE (
+  TABLESPACE "FUSION" ENABLE STORAGE IN ROW CHUNK 8192 PCTVERSION 10
+  NOCACHE LOGGING 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)) 
+ LOB ("ATTACHMENTLIST") STORE AS BASICFILE (
+  TABLESPACE "FUSION" ENABLE STORAGE IN ROW CHUNK 8192 PCTVERSION 10
+  NOCACHE LOGGING 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)) 
+  PARALLEL 4 ;
+--------------------------------------------------------
+--  DDL for Index IDX_IA_CHL_DT_LTLG_INACTID
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_IA_CHL_DT_LTLG_INACTID" ON "FUSION"."TBL_INCACTIVITY" ("CHANNEL", "UPDATEDDATE", "LATITUDE", "LONGITUDE", "INCIDENTCATEGORY", "INCIDENTID", "INCACTIVITYID", "NC4LEVEL") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_LATLON
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_LATLON" ON "FUSION"."TBL_INCACTIVITY" ("INCIDENTID", "INCACTIVITYID", "LATITUDE", "LONGITUDE") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_CHANNEL_REG
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_CHANNEL_REG" ON "FUSION"."TBL_INCACTIVITY" ("CHANNEL", "REGION") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_INCID
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_INCID" ON "FUSION"."TBL_INCACTIVITY" ("INCIDENTID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_LATLONGCHNL
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_LATLONGCHNL" ON "FUSION"."TBL_INCACTIVITY" ("CHANNEL", "LATITUDE", "LONGITUDE") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_LATLONG
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_LATLONG" ON "FUSION"."TBL_INCACTIVITY" ("LATITUDE", "LONGITUDE") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_PRG
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_PRG" ON "FUSION"."TBL_INCACTIVITY" ("PROGRAM", "INCIDENTID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_UPDATEDDATE_3
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_UPDATEDDATE_3" ON "FUSION"."TBL_INCACTIVITY" ("UPDATEDDATE", "CHANNEL", "NC4LEVEL", "INCIDENTID", "INCACTIVITYID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_UPDATEDDATE
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_UPDATEDDATE" ON "FUSION"."TBL_INCACTIVITY" ("UPDATEDDATE", "INCIDENTID", "INCACTIVITYID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index PK_TBL_INCACTIVITY
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "FUSION"."PK_TBL_INCACTIVITY" ON "FUSION"."TBL_INCACTIVITY" ("INCIDENTID", "INCACTIVITYID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_CHANNEL
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_CHANNEL" ON "FUSION"."TBL_INCACTIVITY" ("CHANNEL") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_RSTAPI
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_RSTAPI" ON "FUSION"."TBL_INCACTIVITY" ("UPDATEDDATE", "LATITUDE", "LONGITUDE", "CHANNEL", "INCIDENTID", "INCACTIVITYID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX$$_1C250001
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX$$_1C250001" ON "FUSION"."TBL_INCACTIVITY" (SYS_OP_C2C("INCIDENTID")) 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_CREATEDDATE
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_CREATEDDATE" ON "FUSION"."TBL_INCACTIVITY" ("CREATEDDATE") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX$$_15120002
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX$$_15120002" ON "FUSION"."TBL_INCACTIVITY" ("NC4LEVEL") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_CHR_UPDDATE
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_CHR_UPDDATE" ON "FUSION"."TBL_INCACTIVITY" ("INCIDENTID", "INCACTIVITYID", "CHANNEL", "REGION", "COUNTRY", "NC4LEVEL", TO_CHAR("UPDATEDDATE",'YYYY-MM-DD')) 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_ACTID_3
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_ACTID_3" ON "FUSION"."TBL_INCACTIVITY" ("INCACTIVITYID", "INCIDENTID", "CHANNEL", "NC4LEVEL", UPPER("INCIDENTCATEGORY")) 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_ACTID_2
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_ACTID_2" ON "FUSION"."TBL_INCACTIVITY" ("INCACTIVITYID", "INCIDENTID", "CHANNEL", UPPER("INCIDENTCATEGORY"), "NC4LEVEL") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACTIVITY_ACTID_4
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACTIVITY_ACTID_4" ON "FUSION"."TBL_INCACTIVITY" ("CHANNEL", "INCIDENTID", "INCACTIVITYID", "NC4LEVEL") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_MOB_OP_CLS
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_MOB_OP_CLS" ON "FUSION"."TBL_INCACTIVITY" ("UPDATEDDATE", "LATITUDE", "LONGITUDE", "CHANNEL", "INCIDENTCATEGORY", "NC4LEVEL", "INCIDENTID", "INCACTIVITYID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_ACTSTATUS
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_ACTSTATUS" ON "FUSION"."TBL_INCACTIVITY" ("ACTIVITYSTATUS") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX$$_93150002
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX$$_93150002" ON "FUSION"."TBL_INCACTIVITY" ("CHANNEL", "INCACTIVITYID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  DDL for Index IDX_INCACT_CHNL_ST_LVL_PK
+--------------------------------------------------------
+
+  CREATE INDEX "FUSION"."IDX_INCACT_CHNL_ST_LVL_PK" ON "FUSION"."TBL_INCACTIVITY" ("CHANNEL", "ACTIVITYSTATUS", "NC4LEVEL", "INCACTIVITYID", "INCIDENTID", TO_CHAR("UPDATEDDATE",'YYYY-MM-DD')) 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION" ;
+--------------------------------------------------------
+--  Constraints for Table TBL_INCACTIVITY
+--------------------------------------------------------
+
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("NC4LEVEL" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("NOTIFYRULE" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("ACTIVITYSTATUS" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("APPROXIMATE" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("LATITUDE" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("LONGITUDE" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("COUNTRY" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("INCACTIVITYID" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" MODIFY ("INCIDENTID" NOT NULL ENABLE);
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" ADD SUPPLEMENTAL LOG DATA (UNIQUE INDEX) COLUMNS;
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" ADD SUPPLEMENTAL LOG DATA (FOREIGN KEY) COLUMNS;
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" ADD SUPPLEMENTAL LOG DATA (PRIMARY KEY) COLUMNS;
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" ADD CONSTRAINT "PK_TBL_INCACTIVITY" PRIMARY KEY ("INCIDENTID", "INCACTIVITYID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "FUSION"  ENABLE;
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" ADD CHECK (LATLONGONLY IN (0, 1)) ENABLE;
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
+--------------------------------------------------------
+--  Ref Constraints for Table TBL_INCACTIVITY
+--------------------------------------------------------
+
+  ALTER TABLE "FUSION"."TBL_INCACTIVITY" ADD CONSTRAINT "FK_INCIDENTS_ACTIVITY" FOREIGN KEY ("INCIDENTID")
+	  REFERENCES "FUSION"."TBL_INCIDENTS" ("INCIDENTID") ON DELETE CASCADE ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRDT_TBL_INCACTIVITY
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TRIGGER "FUSION"."TRDT_TBL_INCACTIVITY" before insert or update on TBL_INCACTIVITY for each row begin  if trgdt_mgr.isdisabled = 0 then  if inserting then :new.createddate := systimestamp; :new.createdby := context_mgr.get_fullname;  :new.createdorg := context_mgr.get_orgname;  :new.updateddate := systimestamp; :new.updatedby := context_mgr.get_fullname; :new.updatedorg := context_mgr.get_orgname;  end if; if updating then :new.updateddate := systimestamp; :new.updatedby := context_mgr.get_fullname;  :new.updatedorg := context_mgr.get_orgname; end if; end if;  end; 
+
+
+
+
+
+
+
+
+
+/
+ALTER TRIGGER "FUSION"."TRDT_TBL_INCACTIVITY" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TR_INCACTIVITY_UPDATE
+--------------------------------------------------------
+
+  CREATE OR REPLACE EDITIONABLE TRIGGER "FUSION"."TR_INCACTIVITY_UPDATE" FOR
+    INSERT ON tbl_incactivity
+COMPOUND TRIGGER
+    TYPE id_primary_id IS RECORD ( incidentid         tbl_incactivity.incidentid%TYPE,
+    incactivityid      tbl_incactivity.incactivityid%TYPE );
+    TYPE row_level_info_t IS
+        TABLE OF id_primary_id INDEX BY PLS_INTEGER;
+    g_row_level_info   row_level_info_t;
+    itr                INTEGER;
+    indx               INTEGER;
+    payload_clob       CLOB;
+    inc_count          NUMBER := 0;
+    err_code           VARCHAR2(20);
+    err_msg            VARCHAR2(200);
+    payloadid          VARCHAR2(32);
+    payloadid2         VARCHAR2(32);
+    AFTER EACH ROW IS BEGIN
+        itr := g_row_level_info.count + 1;
+        g_row_level_info(itr).incidentid :=:new.incidentid;
+        g_row_level_info(itr).incactivityid :=:new.incactivityid;
+    END AFTER EACH ROW;
+    AFTER STATEMENT IS
+        p_numaffected   NUMBER;
+    BEGIN
+        indx := 1;
+        dbms_output.put_line('begin '
+        || itr);
+        FOR indx IN 1..itr LOOP
+            dbms_output.put_line('inside loop '
+            || itr);
+            IF
+                g_row_level_info(indx).incactivityid IS NOT NULL AND g_row_level_info(indx).incidentid IS NOT NULL
+            THEN
+                BEGIN
+                    SELECT
+                        COUNT(1)
+                    INTO
+                        inc_count
+                    FROM
+                        tbl_incactivity
+                    WHERE
+                        incidentid = g_row_level_info(indx).incidentid
+                        AND   incactivityid = g_row_level_info(indx).incactivityid
+                        AND   ROWNUM = 1;
+
+                    IF
+                        inc_count > 0
+                    THEN
+                        payload_clob := fusion.incident_json.incident_tojson(g_row_level_info(indx).incidentid,g_row_level_info(indx).incactivityid);
+
+                        IF
+                            payload_clob IS NOT NULL
+                        THEN
+                            INSERT INTO fusion_warehouse.tbl_azure_storage_queue (
+                                storage_type,
+                                payload_pk1,
+                                payload_container_name,
+                                payload_object,
+                                payload_object_name,
+                                payload_clob
+                            )
+                                SELECT
+                                    'DOCUMENT',
+                                    g_row_level_info(indx).incidentid,
+                                    azure_storage_mgr.get_container_name('incactivity_collection'),
+                                    'INCIDENT',
+                                    'incident_document',
+                                    payload_clob
+                                FROM
+                                    tbl_incactivity
+                                WHERE
+                                    incidentid = g_row_level_info(indx).incidentid
+                                    AND   incactivityid = g_row_level_info(indx).incactivityid;
+
+                        END IF;
+
+                    END IF;
+
+                EXCEPTION
+                    WHEN OTHERS THEN
+                        err_code := sqlcode;
+                        err_msg := substr(sqlerrm,1,200);
+                        payloadid := g_row_level_info(indx).incidentid;
+                        payloadid2 := g_row_level_info(indx).incactivityid;
+                        INSERT INTO fusion_warehouse.tbl_azure_error (
+                            error_code,
+                            error_message,
+                            payload_pk1,
+                            payload_pk2,
+                            source
+                        ) VALUES (
+                            err_code,
+                            err_msg,
+                            payloadid,
+                            payloadid2,
+                            'TR_INCIDENTS_UPDATE AFTER STATEMENT'
+                        );
+
+                END;
+
+            END IF;
+
+        END LOOP;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            err_code := sqlcode;
+            err_msg := substr(sqlerrm,1,200);
+            dbms_output.put_line(err_code
+            || ' '
+            || err_msg);
+    END AFTER STATEMENT;
+END;
+/
+ALTER TRIGGER "FUSION"."TR_INCACTIVITY_UPDATE" ENABLE;
