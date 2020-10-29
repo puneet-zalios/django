@@ -391,13 +391,13 @@ FROM fusion.tbl_incactivity WHERE %s GROUP BY incidentid"
     #Check here what is selected by the User.
     if 'scope_limitation' not in post or post['scope_limitation'] == 'final':
         inner = inner_final
-        inner %= ' AND '.join([c.replace("acti.","") for c in comps])
-    elif post.has_key('scope_limitation') and post['scope_limitation'] == 'initial':
+        inner %= ' AND '.join([c.replace("acti.", "") for c in comps])
+    elif 'scope_limitation' in post and post['scope_limitation'] == 'initial':
         inner = inner_initial
-        inner %= ' AND '.join([c.replace("acti.","") for c in comps])
-    elif post.has_key('scope_limitation') and post['scope_limitation'] == 'both':
-        inner_initial %= ' AND '.join([c.replace("acti.","") for c in comps])
-        inner_final %= ' AND '.join([c.replace("acti.","") for c in comps])
+        inner %= ' AND '.join([c.replace("acti.", "") for c in comps])
+    elif 'scope_limitation' in post and post['scope_limitation'] == 'both':
+        inner_initial %= ' AND '.join([c.replace("acti.", "") for c in comps])
+        inner_final %= ' AND '.join([c.replace("acti.", "") for c in comps])
         inner = inner_initial + " UNION " + inner_final
 
     #inner %= ' AND '.join(comps)
@@ -493,7 +493,8 @@ def html(request):
         'criteria': json.dumps(post_data),
         'total_rows': total_rows,
         'total_incidents': total_incidents,
-        'objs': None if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else objs
+        'objs': None if 'statistics_only' in post_data and
+        post_data['statistics_only'] == "1" else objs
     })
 
 
@@ -506,7 +507,12 @@ def html_reg(request):
             post_data[key] = value[0]
         if len(value) > 1:
             post_data[key] = value
-    objs, query = getRegionalObjects(request.POST, regional_cols_count_only if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else regional_cols_only)
+
+    objs, query = getRegionalObjects(
+        request.POST,
+        regional_cols_count_only if 'statistics_only' in post_data and
+        post_data['statistics_only'] == "1" else regional_cols_only
+    )
 
     prev_row = None
     isOff = True
@@ -538,8 +544,10 @@ def html_reg(request):
 
     return render(request, 'incidents/reporting/results_reg.html', {
         'criteria': json.dumps(post_data),
-        'total_rows': objs[0]['count(*)'] if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else len(objs),
-        'objs': None if post_data.has_key('statistics_only') and post_data['statistics_only'] == "1" else objs
+        'total_rows': objs[0]['count(*)'] if 'statistics_only' in post_data and
+        post_data['statistics_only'] == "1" else len(objs),
+        'objs': None if 'statistics_only' in post_data and
+        post_data['statistics_only'] == "1" else objs
     })
 
 
