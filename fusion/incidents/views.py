@@ -140,8 +140,6 @@ def makeCSVResponse(rows, filename, cols=FAC_COLS):
 @login_required
 @csrf_exempt
 def domestic(req):
-    cursor = connection.cursor()
-#    cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     return makeCSVResponse(nonNC4Facilities().filter(country='United States'),
                            'domestic')
 
@@ -149,19 +147,20 @@ def domestic(req):
 @login_required
 @csrf_exempt
 def international(req):
-    cursor1 = connection.cursor()
-#    cursor1.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
-    return makeCSVResponse(nonNC4Facilities().exclude(country='United States'),
-                           'international')
+    return makeCSVResponse(
+        nonNC4Facilities().exclude(country='United States'), 'international'
+    )
+
 
 #@cache(60*60*12)
 @login_required
 @csrf_exempt
 def nc4(req):
-    cursor2 = connection.cursor()
-#    cursor2.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
-    return makeCSVResponse(getFacilities().filter(facilityname__contains='NC4'),
-        'NC4_Facilities')
+    return makeCSVResponse(
+        getFacilities().filter(facilityname__contains='NC4'),
+        'NC4_Facilities'
+    )
+
 
 class PostRow(object):
     def __init__(self, post, id):
@@ -182,13 +181,12 @@ def makeRow(post, id):
     return PostRow(post, id)
 
 
-def makeComps(post,conditions_cols):
-    l=[]
+def makeComps(post, conditions_cols):
+    l = []
     for id in post['ids'].split(','):
         row = makeRow(post, id)
         if row['type'] in conditions_cols:
             l.append(make_comp(row, post, conditions_cols))
-    #l = [make_comp(makeRow(post, id),post,conditions_cols) for id in post['ids'].split(',')]
 
     if (post['searchtype'] != 'regional' and
             'cybertech' in post and
@@ -203,8 +201,9 @@ def makeComps(post,conditions_cols):
 
 class FormattedDateTime(datetime):
     def __new__(self, dt):
-        return datetime.__new__(self, dt.year, dt.month, dt.day, dt.hour,
-                                dt.minute, dt.second, dt.microsecond, dt.tzinfo)
+        return datetime.__new__(
+            self, dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+            dt.microsecond, dt.tzinfo)
 
     def __str__(self):
         return self.strftime('%m/%d/%Y %H:%M')
@@ -212,7 +211,6 @@ class FormattedDateTime(datetime):
 
 class RowDict(dict):
     def __init__(self, row, cols):
-        data = dict(zip(cols, row))
         for name, val in zip(cols, row):
             self[name] = val
         self['style'] = '%s_%s' % ('a', 'b')
@@ -243,7 +241,7 @@ def joinVWComps(comps):
     if not comps:
         return ''
     else:
-        return  ' AND ' + ' AND '.join(comps)
+        return ' AND ' + ' AND '.join(comps)
 
 
 def getRegionalObjects(post, cols=regional_cols):
@@ -297,10 +295,10 @@ def getRegionalObjects(post, cols=regional_cols):
 
 
     cursor = connection.cursor()
-    #query_di_region %= (' AND '.join(comps))
-    #for xx in regional_conditions_cols:
-    #    f.write(xx))
-    #f.write("post " + json.dumps(post))
+    # query_di_region %= (' AND '.join(comps))
+    # for xx in regional_conditions_cols:
+    #     f.write(xx))
+    # f.write("post " + json.dumps(post))
     f.write("getallobj " + query)
     cursor.execute("""begin security_mgr.namelogin('nc4admin'); end;/""")
     cursor.execute(query.replace('%', '%%'))
@@ -318,7 +316,7 @@ def getObjects(post, cols=latest_cols):
         if 'incident_history' in post and post['incident_history'] == '1':
             for obj in allActivityObjs:
                 activity_id = obj['incactivityid']
-                my_dict[activity_id]=1
+                my_dict[activity_id] = 1
 
             allIncActivitiesObjs, query = getAllIncObjects(post, cols, comps)
             f = open(os.path.join(settings.BASE_DIR,
@@ -351,7 +349,6 @@ def getAllObjects(post, cols, comps):
     f.write("getallobj " + query)
     cursor.execute(query.replace('%', '%%'))
 
-
     f.write("getallobj " + query)
     f.close()
     return makeObjs(cursor, cols), query
@@ -366,10 +363,9 @@ def getAllIncObjects(post, cols, comps):
     query %= (', '.join(['acti_outer.'+c+" "+c for c in cols]), ' AND '.join(comps))
     print(query)
     cursor = connection.cursor()
-    #cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
+    # cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     f.write(query)
     cursor.execute(query.replace('%', '%%'))
-
 
     f.write("getallobj " + query)
     f.close()
@@ -400,12 +396,12 @@ FROM fusion.tbl_incactivity WHERE %s GROUP BY incidentid"
         inner_final %= ' AND '.join([c.replace("acti.", "") for c in comps])
         inner = inner_initial + " UNION " + inner_final
 
-    #inner %= ' AND '.join(comps)
+    # inner %= ' AND '.join(comps)
     query %= (', '.join(['acti.'+c for c in cols]), inner)
     f = open(os.path.join(settings.BASE_DIR, "StatsLatestObjects.txt"), 'w')
     f.write("getlatestobj " + query)
     cursor = connection.cursor()
-    #cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
+    # cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     cursor.execute(query.replace('%', '%%'))
     f.close()
     return makeObjs(cursor, cols), query
@@ -521,21 +517,25 @@ def html_reg(request):
     duplicates = []
     f = open(os.path.join(settings.BASE_DIR, 'Django_values.txt'), 'w')
     for index, row in enumerate(objs):
-        if (row.itemtype=='SEB' or row.itemtype=='SR') :
+        if row.itemtype == 'SEB' or row.itemtype == 'SR':
             f.write("\n NEW LINE " + str(row.itemcountryline))
-            if prev_row != None and row.itemid == prev_row.itemid:
+            if prev_row is not None and row.itemid == prev_row.itemid:
                 duplicates.append(prev_row)
-                #new_country = str(row.country) + str(prev_row.country)
-                #f.write("new_country " + new_country)
-                #prev_countryline = prev_row.itemcountryline if prev_row.country != prev_row.itemcountryline else ""
-                row['itemcountryline'] = row.itemcountryline if row.country != row.itemcountryline else ""
+                # new_country = str(row.country) + str(prev_row.country)
+                # f.write("new_country " + new_country)
+                # prev_countryline = prev_row.itemcountryline \
+                #     if prev_row.country != prev_row.itemcountryline else ""
+                row['itemcountryline'] = row.itemcountryline \
+                    if row.country != row.itemcountryline else ""
                 seperator = ' , ' if row.itemcountryline != "" else ' '
-                row['itemcountryline'] = row.itemcountryline + seperator +prev_row.itemcountryline
+                row['itemcountryline'] = row.itemcountryline + seperator + \
+                    prev_row.itemcountryline
                 f.write("\n " + str(row.itemcountryline))
             else:
-                row['itemcountryline'] = row.itemcountryline if row.country != row.itemcountryline else ""
+                row['itemcountryline'] = row.itemcountryline \
+                    if row.country != row.itemcountryline else ""
 
-        prev_row = row;
+        prev_row = row
         objs[index] = row
 
     for x in duplicates:
@@ -556,13 +556,15 @@ def html_reg(request):
 def kml(req):
     cols = kmz_cols
 
-    placemarks, query = getLatestObjects(req.POST, cols, makeComps(req.POST,rt_conditions_cols))
+    placemarks, query = getLatestObjects(
+        req.POST, cols, makeComps(req.POST, rt_conditions_cols)
+    )
     now = datetime.now().isoformat()
     name = 'Search Results @ %s' % now
     styles = set([obj['style'] for obj in placemarks])
 
     response = HttpResponse(content_type='application/vnd.google-earth.kmz')
-    response['Content-Disposition'] = 'attachment; filename=Search-%s.kmz' % now
+    response['Content-Disposition'] = f"attachment; filename=Search-{now}.kmz"
     zf, sio = get_images_kmz(styles)
     c = Context(locals())
     strr = get_template('reporting/reporting.kml').render(c)
@@ -619,9 +621,14 @@ def details(req):
 #   f = open("c:/www/Stats2.txt",'w')
 #   f.write(req.GET['incactid'])
 #   f.close()
-    cols = ['updateddate', 'dateoccurred', 'incidentcategory', 'incidenttype','county','street','stateprovince','latitude','longitude',
-            'city', 'country', 'updatedby', 'gist', 'description', 'severity','postal','approximate','notifyrule',
-            'infosource', 'infoquality', 'conversationlog', 'attachmentlist','program']
+    cols = [
+        'updateddate', 'dateoccurred', 'incidentcategory', 'incidenttype',
+        'county', 'street', 'stateprovince', 'latitude', 'longitude', 'city',
+        'country', 'updatedby', 'gist', 'description', 'severity', 'postal',
+        'approximate', 'notifyrule', 'infosource', 'infoquality',
+        'conversationlog', 'attachmentlist', 'program'
+    ]
+
     try:
         incactivityid = req.GET['incactid']
     except Exception:
@@ -632,12 +639,15 @@ def details(req):
 #     attachments = str(incactivity.attachmentlist)
 #     if attachments is not None and attachments != '':
 #         print type(attachments)
-#         attachments = Attachments.objects.filter(attachmentid__in=attachments.split(','))
+#         attachments = Attachments.objects.filter(
+#             attachmentid__in=attachments.split(','))
 # WHY?: Because trying to access the incactivity.attachmentlist
 #       raises an "LOB vairable no longer available" exception
-#    query = "SELECT %s FROM fusion.incactivity WHERE incactivityid=TO_TIMESTAMP('%s', 'MM/DD/YYYY HH24:MI:SS')"
+#    query = "SELECT %s FROM fusion.incactivity WHERE"
+#            " incactivityid=TO_TIMESTAMP('%s', 'MM/DD/YYYY HH24:MI:SS')"
 #    cursor = connection.cursor()
-#    query = "SELECT %s FROM fusion.tbl_incactivity WHERE incactivityid=TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM')"
+#    query = "SELECT %s FROM fusion.tbl_incactivity WHERE"
+#            " incactivityid=TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM')"
     incactivityid = req.GET['incactid']
     incidentid = req.GET['incidentid']
     buf = incactivityid.split()
@@ -656,9 +666,9 @@ def details(req):
     buf = ' '.join(buf)
 
     query = "SELECT %s FROM fusion.tbl_incactivity WHERE incidentid='%s' AND incactivityid between TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM') and TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM')" % (','.join(cols), incidentid, incactivityid, buf)
-    #query = "SELECT %s FROM fusion.tbl_incactivity WHERE incidentid='%s'" % (','.join(cols), incidentid)
-    f = open("D:/django/Stats2.txt",'w')
-    #query = query % (','.join(cols), incactivityid, buf)
+    # query = "SELECT %s FROM fusion.tbl_incactivity WHERE incidentid='%s'" % (','.join(cols), incidentid)
+    # f = open("D:/django/Stats2.txt",'w')
+    # query = query % (','.join(cols), incactivityid, buf)
     cursor.execute(query)
     incident = RowDict(cursor.fetchone(), cols)
 
@@ -668,17 +678,17 @@ def details(req):
         attachments = Attachments.objects.filter(attachid__in=ids)
         attach_query = """SELECT label,linkdata,mimetype FROM fusion.tbl_incattachments WHERE attachid IN (%s)"""
         format_strings = ','.join(['%s'] * len(ids))
-        #query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)" % (','.join(ids))
+        # query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)" % (','.join(ids))
         cursor.execute(attach_query % format_strings, tuple(ids))
-        #f.write("\nQuery3 " + query_categories)
-        attachments = makeObjs(cursor, ['label','linkdata','mimetype'])
+        # f.write("\nQuery3 " + query_categories)
+        attachments = makeObjs(cursor, ['label', 'linkdata', 'mimetype'])
     else:
         attachments = None
-    #DMARK - TEST.  REMOVE NEXT LINE TO ENABLE ATTACHMENTS.
-    #attachments = None
-    #f = open("c:/www/Stats2.txt",'w')
-    #f.write(req.GET['incactid'])
-    #f.close()
+    # DMARK - TEST.  REMOVE NEXT LINE TO ENABLE ATTACHMENTS.
+    # attachments = None
+    # f = open("c:/www/Stats2.txt",'w')
+    # f.write(req.GET['incactid'])
+    # f.close()
     return render(
         req,
         'incidents/reporting/details.html',
@@ -706,9 +716,9 @@ def details_reg(req):
     item = RowDict(cursor.fetchone(), regional_cols)
     f.write("\nItem=" + str(item))
 
-    #Actors
+    # Actors
     if item['itemattributetoactor']:
-        ids=tuple(item['itemattributetoactor'].split(','))
+        ids = tuple(item['itemattributetoactor'].split(','))
         format_strings = ','.join(['%s'] * len(ids))
         query_actors = "SELECT ACTORNAME FROM transecur.actors WHERE primary_id IN (%s)"
         cursor.execute(query_actors % format_strings, ids)
@@ -717,8 +727,8 @@ def details_reg(req):
     else:
         actors = None
 
-    #Categories
-    ids=tuple(item['itemcategory'].split(','))
+    # Categories
+    ids = tuple(item['itemcategory'].split(','))
     format_strings = ','.join(['%s'] * len(ids))
     query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)"
     cursor.execute(query_categories % format_strings, ids)
@@ -726,20 +736,28 @@ def details_reg(req):
     categories = makeObjs(cursor, ['FULLYQUALIFIED'])
 
     f.close()
-    #SELECt * FROM fusion.tbl_category where categoryid IN
-    #if incident.attachmentlist:
-        #ids = str(incident.attachmentlist).split(',')
-        #attachments = Attachments.objects.filter(attachid__in=ids)
-        #attach_query = """SELECT * FROM fusion.tbl_incattachments WHERE attachid IN %s""" % ('(%s)' % ', '.join(["'%s'" % id for id in ids]))
-    #else:
-        #attachments = None
-    #DMARK - TEST.  REMOVE NEXT LINE TO ENABLE ATTACHMENTS.
-    #attachments = None
-    #f = open("c:/www/Stats2.txt",'w')
-    #f.write(req.GET['incactid'])
-    #f.close()
-    return render(req, 'incidents/reporting/details_reg.html',
-                              {'item': item, 'actors':actors,'categories':categories,'attachments': None})
+    # SELECt * FROM fusion.tbl_category where categoryid IN
+    # if incident.attachmentlist:
+    #     ids = str(incident.attachmentlist).split(',')
+    #     attachments = Attachments.objects.filter(attachid__in=ids)
+    #     attach_query = """SELECT * FROM fusion.tbl_incattachments WHERE attachid IN %s""" % ('(%s)' % ', '.join(["'%s'" % id for id in ids]))
+    # else:
+    #     attachments = None
+    # DMARK - TEST.  REMOVE NEXT LINE TO ENABLE ATTACHMENTS.
+    # attachments = None
+    # f = open("c:/www/Stats2.txt",'w')
+    # f.write(req.GET['incactid'])
+    # f.close()
+    return render(
+        req,
+        'incidents/reporting/details_reg.html',
+        {
+            'item': item,
+            'actors': actors,
+            'categories': categories,
+            'attachments': None
+        }
+    )
 
 
 @login_required
@@ -784,49 +802,51 @@ def details_reg_vw(req):
     for item1 in items[0]:
         if item1['country'] != item1['valuelabel']:
             if secondary_location != "":
-                secondary_location = secondary_location + " , " + item1['valuelabel']
+                secondary_location = secondary_location + " , " + \
+                    item1['valuelabel']
             else:
                 secondary_location = item1['valuelabel']
         else:
             item = item1
     item['secondary_location'] = secondary_location
 
-    #Actors
-    #ids=["'"+e+"'" for e in str(item['itemattributetoactor']).split(',')]
-    #query_actors = "SELECT ACTORNAME FROM transecur.actors WHERE primary_id IN (%s)" % (','.join(ids))
-    #cursor.execute(query_actors)
-    #f.write("\nQuery3 " + query_actors)
-    #actors = makeObjs(cursor, ['ACTORNAME'])
+    # Actors
+    # ids=["'"+e+"'" for e in str(item['itemattributetoactor']).split(',')]
+    # query_actors = "SELECT ACTORNAME FROM transecur.actors WHERE primary_id IN (%s)" % (','.join(ids))
+    # cursor.execute(query_actors)
+    # f.write("\nQuery3 " + query_actors)
+    # actors = makeObjs(cursor, ['ACTORNAME'])
 
-    #Categories
-    #ids=["'"+e+"'" for e in str(item['itemcategory']).split(',')]
-    #query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)" % (','.join(ids))
-    #cursor.execute(query_categories)
-    #f.write("\nQuery3 " + query_categories)
-    #categories = makeObjs(cursor, ['FULLYQUALIFIED'])
+    # Categories
+    # ids=["'"+e+"'" for e in str(item['itemcategory']).split(',')]
+    # query_categories = "SELECT FULLYQUALIFIED FROM fusion.tbl_category WHERE categoryid IN (%s)" % (','.join(ids))
+    # cursor.execute(query_categories)
+    # f.write("\nQuery3 " + query_categories)
+    # categories = makeObjs(cursor, ['FULLYQUALIFIED'])
 
     f.close()
-    #SELECt * FROM fusion.tbl_category where categoryid IN
-    #if incident.attachmentlist:
-        #ids = str(incident.attachmentlist).split(',')
-        #attachments = Attachments.objects.filter(attachid__in=ids)
-        #attach_query = """SELECT * FROM fusion.tbl_incattachments WHERE attachid IN %s""" % ('(%s)' % ', '.join(["'%s'" % id for id in ids]))
-    #else:
-        #attachments = None
-    #DMARK - TEST.  REMOVE NEXT LINE TO ENABLE ATTACHMENTS.
-    #attachments = None
-    #f = open("c:/www/Stats2.txt",'w')
-    #f.write(req.GET['incactid'])
-    #f.close()
+    # SELECt * FROM fusion.tbl_category where categoryid IN
+    # if incident.attachmentlist:
+    #     ids = str(incident.attachmentlist).split(',')
+    #     attachments = Attachments.objects.filter(attachid__in=ids)
+    #     attach_query = """SELECT * FROM fusion.tbl_incattachments WHERE attachid IN %s""" % ('(%s)' % ', '.join(["'%s'" % id for id in ids]))
+    # else:
+    #     attachments = None
+    # DMARK - TEST.  REMOVE NEXT LINE TO ENABLE ATTACHMENTS.
+    # attachments = None
+    # f = open("c:/www/Stats2.txt",'w')
+    # f.write(req.GET['incactid'])
+    # f.close()
     return render(
         req,
         'incidents/reporting/details_reg_vw.html',
         {
             'item': item,
-            'actors':None,
-            'categories':None,
+            'actors': None,
+            'categories': None,
             'attachments': None
-        })
+        }
+    )
 
 
 @login_required
@@ -848,7 +868,7 @@ WHERE %(comps)s
 """
     query %= {'cols': ', '.join(cols), 'comps': ' AND '.join(comps+["currentstatus='OPEN'"])}
     cursor = connection.cursor()
-#    cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
+    # cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
     cursor.execute(query)
     return make_kmz(makeObjs(cursor, cols), filename, title)
 
