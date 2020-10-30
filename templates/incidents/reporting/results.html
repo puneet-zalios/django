@@ -33,18 +33,163 @@ $j(document).ready(function() {
   <dt>Total Incidents</dt><dd>{{ total_incidents }}</dd>
   <dt>Total Reports</dt><dd>{{ total_rows }}</dd>
 </dl>
+Hello
 <table>
 {% if objs %}
-<tr><th>Updated</th><th>Severity</th><th>Category</th><th>Type</th><th>City</th><th>State</th><th>County</th></tr>
+<tr>
+    {% if request.POST.incidentid %}
+    <th>Incident Id</th>
+    {% endif %}
+    {% if request.POST.incidentcategory %}
+    <th>Category</th>
+    {% endif %}
+    {% if request.POST.incidenttype %}
+    <th>Type</th>
+    {% endif %}
+    {% if request.POST.dateoccurred %}
+    <th>Date Occurred</th>
+    {% endif %}
+    {% if request.POST.updateddate %}
+    <th>Updated Date</th>
+    {% endif %}
+    {% if request.POST.severity %}
+    <th>Severity</th>
+    {% endif %}
+    {% if request.POST.city %}
+    <th>City</th>
+    {% endif %}
+    {% if request.POST.stateprovince %}
+    <th>State</th>
+    {% endif %}
+    {% if request.POST.country %}
+    <th>Country</th>
+    {% endif %}
+    {% if request.POST.gist %}
+    <th>Gist</th>
+    {% endif %}
+    {% if request.POST.description %}
+    <th>Description</th>
+    {% endif %}
+    {% if request.POST.infosource %}
+    <th>Info Source</th>
+    {% endif %}
+    {% if request.POST.infoquality %}
+    <th>Info Quality</th>
+    {% endif %}
+    {% if request.POST.latitude %}
+    <th>Latitude</th>
+    {% endif %}
+    {% if request.POST.longitude %}
+    <th>Longitude</th>
+    {% endif %}
+    {% if request.POST.county %}
+    <th>County</th>
+    {% endif %}
+    {% if request.POST.updatedby %}
+    <th>Updated By</th>
+    {% endif %}
+    {% if request.POST.street %}
+    <th>Street</th>
+    {% endif %}
+    {% if request.POST.postal %}
+    <th>Postal Code</th>
+    {% endif %}
+    {% if request.POST.approximate %}
+    <th>Approximate</th>
+    {% endif %}
+    {% if request.POST.commentflag %}
+    <th>Comment Flag</th>
+    {% endif %}
+</tr>
 {% for row in objs %}
-<tr{% if row.off %} class="off"{% endif %}   {% if row.out_window %} style="font-color: #D3D3D3;font-style: italic;"{% endif %}   >
-  <td>{{row.updateddate|date:"m/d/Y h:i A"}}</td>
-  <td>{{row.severity}}</td>
-  <td>{{row.incidentcategory}}</td>
-  <td>{{row.incidenttype}}</td>
-  <td>{{row.city|escape}}</td>
-  <td>{{row.stateprovince}}</td>
-  <td>{{row.country}}</td>
+<tr
+  {% if row.off %} class="off"{% endif %} 
+  {% if row.out_window %} style="font-color: #D3D3D3;font-style: italic;"{% endif %} >
+
+  {% if request.POST.incidentid %}
+  <td>{{ row.incidentid }}</td>
+  {% endif %}
+
+  {% if request.POST.incidentcategory %}
+  <td>{{ row.incidentcategory }}</td>
+  {% endif %}
+
+  {% if request.POST.incidenttype %}
+  <td>{{ row.incidenttype }}</td>
+  {% endif %}
+
+  {% if request.POST.dateoccurred %}
+  <td>{{ row.updateddate|date:"m/d/Y h:i A" }}</td>
+  {% endif %}
+
+  {% if request.POST.updateddate %}
+  <td>{{ row.updateddate|date:"m/d/Y h:i A" }}</td>
+  {% endif %}
+
+  {% if request.POST.severity %}
+  <td>{{ row.severity }}</td>
+  {% endif %}
+
+  {% if request.POST.city %}
+  <td>{{ row.city }}</td>
+  {% endif %}
+
+  {% if request.POST.stateprovince %}
+  <td>{{ row.stateprovince }}</td>
+  {% endif %}
+
+  {% if request.POST.country %}
+  <td>{{ row.country }}</td>
+  {% endif %}
+
+  {% if request.POST.gist %}
+  <td>{{ row.gist }}</td>
+  {% endif %}
+
+  {% if request.POST.description %}
+  <td>{{ row.description }}</td>
+  {% endif %}
+
+  {% if request.POST.infosource %}
+  <td>{{ row.infosource }}</td>
+  {% endif %}
+
+  {% if request.POST.infoquality %}
+  <td>{{ row.infoquality }}</td>
+  {% endif %}
+
+  {% if request.POST.latitude %}
+  <td>{{ row.latitude }}</td>
+  {% endif %}
+
+  {% if request.POST.longitude %}
+  <td>{{ row.latitude }}</td>
+  {% endif %}
+
+  {% if request.POST.updatedby %}
+  <td>{{ row.updatedby }}</td>
+  {% endif %}
+
+  {% if request.POST.county %}
+  <td>{{ row.county }}</td>
+  {% endif %}
+
+  {% if request.POST.street %}
+  <td>{{ row.street }}</td>
+  {% endif %}
+
+  {% if request.POST.postal %}
+  <td>{{ row.postal }}</td>
+  {% endif %}
+
+  {% if request.POST.approximate %}
+  <td>{{ row.approximate }}</td>
+  {% endif %}
+
+  {% if request.POST.commentflag %}
+  <td>{{ row.commentflag }}</td>
+  {% endif %}
+
   <td>
     <form action="./details" method="get">
       <div>
