@@ -41,7 +41,7 @@ class DateCol(Col):
 
 class AnalystCol(Col):
     def parse(self, val):
-        return "'NC4Analyst%s'" % val
+        return "'%s'" % val
 
 
 def make_parse_chain(op, col):
