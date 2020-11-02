@@ -122,7 +122,11 @@ regional_cols_only = [
 
 regional_cols_count_only = ['count(*)']
 
-kmz_images_path = 'D:/django/fusion/'
+if os.name == 'posix':
+    kmz_images_path = '/app/fusion/'
+else:
+    kmz_images_path = 'D:/django/fusion/'
+
 kmz_cols = [
     'description', 'severity', 'incidenttype', 'incidentcategory', 'latitude',
     'longitude', 'dateoccurred', 'gist', 'street', 'city', 'stateprovince',
