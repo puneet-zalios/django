@@ -646,12 +646,11 @@ def csv_out(req):
 @login_required
 @csrf_exempt
 def details(req):
-
     cursor = connection.cursor()
-#    cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
-#   f = open("c:/www/Stats2.txt",'w')
-#   f.write(req.GET['incactid'])
-#   f.close()
+    #    cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
+    #   f = open("c:/www/Stats2.txt",'w')
+    #   f.write(req.GET['incactid'])
+    #   f.close()
     cols = [
         'updateddate', 'dateoccurred', 'incidentcategory', 'incidenttype',
         'county', 'street', 'stateprovince', 'latitude', 'longitude', 'city',
@@ -664,21 +663,21 @@ def details(req):
         incactivityid = req.GET['incactid']
     except Exception:
         return HttpResponseNotFound()
-#    cursor = connection.cursor()
-#    cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
-#     incactivity = IncActivity.objects.get(incactivityid=incactivityid)
-#     attachments = str(incactivity.attachmentlist)
-#     if attachments is not None and attachments != '':
-#         print type(attachments)
-#         attachments = Attachments.objects.filter(
-#             attachmentid__in=attachments.split(','))
-# WHY?: Because trying to access the incactivity.attachmentlist
-#       raises an "LOB vairable no longer available" exception
-#    query = "SELECT %s FROM fusion.incactivity WHERE"
-#            " incactivityid=TO_TIMESTAMP('%s', 'MM/DD/YYYY HH24:MI:SS')"
-#    cursor = connection.cursor()
-#    query = "SELECT %s FROM fusion.tbl_incactivity WHERE"
-#            " incactivityid=TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM')"
+    #    cursor = connection.cursor()
+    #    cursor.execute("begin security_mgr.naMELOGIN('nc4admin'); commit; end;")
+    #     incactivity = IncActivity.objects.get(incactivityid=incactivityid)
+    #     attachments = str(incactivity.attachmentlist)
+    #     if attachments is not None and attachments != '':
+    #         print type(attachments)
+    #         attachments = Attachments.objects.filter(
+    #             attachmentid__in=attachments.split(','))
+    # WHY?: Because trying to access the incactivity.attachmentlist
+    #       raises an "LOB vairable no longer available" exception
+    #    query = "SELECT %s FROM fusion.incactivity WHERE"
+    #            " incactivityid=TO_TIMESTAMP('%s', 'MM/DD/YYYY HH24:MI:SS')"
+    #    cursor = connection.cursor()
+    #    query = "SELECT %s FROM fusion.tbl_incactivity WHERE"
+    #            " incactivityid=TO_TIMESTAMP('%s', 'DD-MON-YY HH.MI.SS PM')"
     incactivityid = req.GET['incactid']
     incidentid = req.GET['incidentid']
     buf = incactivityid.split()
