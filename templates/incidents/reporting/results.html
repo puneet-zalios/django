@@ -33,7 +33,6 @@ $j(document).ready(function() {
   <dt>Total Incidents</dt><dd>{{ total_incidents }}</dd>
   <dt>Total Reports</dt><dd>{{ total_rows }}</dd>
 </dl>
-Hello
 <table>
 {% if objs %}
 <tr>
@@ -100,6 +99,13 @@ Hello
     {% if request.POST.commentflag %}
     <th>Comment Flag</th>
     {% endif %}
+    {% if request.POST.conversationlog %}
+    <th>Comment</th>
+    {% endif %}
+    {% if request.POST.notifyrule %}
+    <th>Notifications</th>
+    {% endif %}
+
 </tr>
 {% for row in objs %}
 <tr
@@ -119,7 +125,7 @@ Hello
   {% endif %}
 
   {% if request.POST.dateoccurred %}
-  <td>{{ row.updateddate|date:"m/d/Y h:i A" }}</td>
+  <td>{{ row.dateoccurred|date:"m/d/Y h:i A" }}</td>
   {% endif %}
 
   {% if request.POST.updateddate %}
@@ -183,12 +189,23 @@ Hello
   {% endif %}
 
   {% if request.POST.approximate %}
-  <td>{{ row.approximate }}</td>
+  <td>Y</td>
+  {% else %}
+  <td>N</td>
   {% endif %}
 
   {% if request.POST.commentflag %}
   <td>{{ row.commentflag }}</td>
   {% endif %}
+
+  {% if request.POST.conversationlog %}
+  <td>{{ row.conversationlog }}</td>
+  {% endif %}
+
+  {% if request.POST.notifyrule %}
+  <td>{{ row.notifyrule }}</td>
+  {% endif %}
+
 
   <td>
     <form action="./details" method="get">
