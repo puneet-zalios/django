@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import csv
-import os
-from datetime import datetime
-from io import StringIO
-from zipfile import ZipFile
 import json
+import logging
+import os
+
+from datetime import datetime
+from io import BytesIO
+from zipfile import ZipFile
 
 from django.db import connection
 from django.http import HttpResponse, HttpResponseNotFound
@@ -17,6 +19,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from fusion.incidents.comp import make_comp, Col, DateCol, AnalystCol
 from fusion.incidents.models import Attachments, Facility
+
+
+logger = logging.getLogger(__name__)
 
 rt_conditions_cols = {
     'inc': Col('Incident Category', 'acti.incidentcategory'),
@@ -219,7 +224,7 @@ class RowDict(dict):
         if type(value) is datetime:
             dict.__setitem__(self, name, FormattedDateTime(value))
         elif hasattr(value, 'read'):
-            dict.__setitem__(self, name, value.read().decode('latin1'))
+            dict.__setitem__(self, name, value.read())
         else:
             dict.__setitem__(self, name, value)
 
@@ -577,10 +582,10 @@ def kml(req):
 
 def get_images_kmz(styles):
     styles = ['incident_%s.gif' % style.lower() for style in styles]
-    sio = StringIO()
+    sio = BytesIO()
     zf = ZipFile(sio, 'w')
     for f in (f for f in os.listdir(kmz_images_path) if f.lower() in styles):
-        zf.write(kmz_images_path+f, 'images/%s' % f)
+        zf.writestr(kmz_images_path+f, 'images/%s' % f)
     return zf, sio
 
 
@@ -601,8 +606,7 @@ def csv_out(req):
     total_rows = 0
     total_incidents = 0
     for obj in objs:
-        writer.writerow([obj[i].encode('ascii', 'backslashreplace')
-                         for i in cols])
+        writer.writerow([obj[i] for i in cols])
         if latest_inc != obj['incidentid']:
             latest_inc = obj['incidentid']
             total_incidents += 1
