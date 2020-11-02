@@ -63,6 +63,20 @@
     alert(div);
   }
 
+  function selectAllOptions() {
+    jQuery('#outputoptions-parent > input').prop('checked', true);
+  }
+
+  function selectDefaultOptions() {
+    jQuery('#outputoptions-parent > input').prop('checked', false);
+    jQuery('#outputoptions-parent > input.default').prop(
+        'checked', true);
+  }
+
+  function selectNoOptions() {
+    jQuery('#outputoptions-parent > input').prop('checked', false);
+  }
+
   {% if is_refine %}
   $j(document).ready(function() {
     var criteria = $j.parseJSON('{{ criteria|safe }}');
@@ -139,52 +153,71 @@
   <span id="outputOptionsToggle"
       onclick="toggleOutputOptions()" >[+]</span> <b>Output Fields</b>
   <div id="outputoptions" style="visibility:hidden">
-    <input type="checkbox" name="incidentid" value="1" />Incident Id
-    <br/>
-    <input type="checkbox" name="incidentcategory" value="1" />Incident Category
-    <br/>
-    <input type="checkbox" name="incidenttype" value="1" />Incident Type
-    <br/>
-    <input type="checkbox" name="dateoccurred" value="1" />Date Occurred
-    <br/>
-    <input type="checkbox" name="updateddate" value="1" />Updated Date
-    <br/>
-    <input type="checkbox" name="severity" value="1" />Severity
-    <br/>
-    <input type="checkbox" name="city" value="1" />City
-    <br/>
-    <input type="checkbox" name="stateprovince" value="1" />StateProvince
-    <br/>
-    <input type="checkbox" name="country" value="1" />Country
-    <br/>
-    <input type="checkbox" name="gist" value="1" />Gist
-    <br/>
-    <input type="checkbox" name="description" value="1" />Description
-    <br/>
-    <input type="checkbox" name="infosource" value="1" />Info Source
-    <br/>
-    <input type="checkbox" name="infoquality" value="1" />Info Quality
-    <br/>
-    <input type="checkbox" name="latitude" value="1" />Latitude
-    <br/>
-    <input type="checkbox" name="longitude" value="1" />Longitude
-    <br/>
-    <input type="checkbox" name="updatedby" value="1" />Updated By
-    <br/>
-    <input type="checkbox" name="county" value="1" />County
-    <br/>
-    <input type="checkbox" name="street" value="1" />Street
-    <br/>
-    <input type="checkbox" name="postal" value="1" />Zip / Postal Code
-    <br/>
-    <input type="checkbox" name="approximate" value="1" />Approximate
-    <br/>
-    <input type="checkbox" name="commentflag" value="1" />Comment
-    </br>
-    <input type="checkbox" name="conversationlog" value="1" />Conversation Log
-    </br>
-    <input type="checkbox" name="notifyrule" value="1" />Notify
-    </br>
+    <button id="allbtn" type="button" onclick="selectAllOptions()">All</button>
+    <button id="allbtn" type="button" onclick="selectNoOptions()">None</button>
+    <button id="allbtn" type="button" onclick="selectDefaultOptions()">
+        Default</button>
+    <div id="outputoptions-parent">
+      <input type="checkbox" name="incidentid" value="1" class="default"/>
+        Incident Id
+      <br/>
+      <input type="checkbox" name="incidentcategory" value="1"
+        class="default"/>Incident Category
+      <br/>
+      <input type="checkbox" name="incidenttype" value="1" class="default"/>
+        Incident Type
+      <br/>
+      <input type="checkbox" name="dateoccurred" value="1" class="default"/>
+        Date Occurred
+      <br/>
+      <input type="checkbox" name="updateddate" value="1" class="default"/>
+        Updated Date
+      <br/>
+      <input type="checkbox" name="severity" value="1" class="default"/>
+        Severity
+      <br/>
+      <input type="checkbox" name="city" value="1" class="default"/>City
+      <br/>
+      <input type="checkbox" name="stateprovince" value="1" class="default"/>
+        StateProvince
+      <br/>
+      <input type="checkbox" name="country" value="1" class="default"/>Country
+      <br/>
+      <input type="checkbox" name="gist" value="1" class="default"/>Gist
+      <br/>
+      <input type="checkbox" name="description" value="1" class="default"/>
+        Description
+      <br/>
+      <input type="checkbox" name="infosource" value="1" class="default"/>
+        Info Source
+      <br/>
+      <input type="checkbox" name="infoquality" value="1" class="default"/>
+        Info Quality
+      <br/>
+      <input type="checkbox" name="latitude" value="1" class="default"/>
+        Latitude
+      <br/>
+      <input type="checkbox" name="longitude" value="1" class="default"/>
+        Longitude
+      <br/>
+      <input type="checkbox" name="updatedby" value="1" />Updated By
+      <br/>
+      <input type="checkbox" name="county" value="1" />County
+      <br/>
+      <input type="checkbox" name="street" value="1" />Street
+      <br/>
+      <input type="checkbox" name="postal" value="1" />Zip / Postal Code
+      <br/>
+      <input type="checkbox" name="approximate" value="1" />Approximate
+      <br/>
+      <input type="checkbox" name="commentflag" value="1" />Comment
+      </br>
+      <input type="checkbox" name="conversationlog" value="1" />
+        Conversation Log
+      </br>
+      <input type="checkbox" name="notifyrule" value="1" />Notify
+      </br>
+    </div>
   </div>
 </form>
 <div id="announcement">
