@@ -13,11 +13,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'RWW',
-        'USER': 'fus',
-        'PASSWORD': 'FUS',
-        'HOST': 'eds1',   # Or an IP Address that your DB is hosted on
-        'PORT': '1571'
+        'NAME': 'ORCLCDB',
+        'USER': 'system',
+        'PASSWORD': 'fusion',
+        'HOST': 'wrangler-db',   # Or an IP Address that your DB is hosted on
+        'PORT': '1521'
     }
 }
 

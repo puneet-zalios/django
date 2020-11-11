@@ -1,16 +1,16 @@
 version: "3"
 services:
-  wrangler_db:
-    image: postgres
+  wrangler-db:
+    image: container-registry.oracle.com/database/enterprise:19.3.0.0
     restart: always
     ports:
-      - "6432:5432"
+      - "1521:1521"
+      - "5500:5500"
     environment:
-      POSTGRES_DB: wrangler
-      POSTGRES_USER: fusion
-      POSTGRES_PASSWORD: secret
+      ORACLE_PDB: wrangler
+      ORACLE_PWD: fusion
     volumes:
-      - wranglerdata:/var/lib/postgresql/data
+      - wranglerdata:/opt/oracle/oradata
 
   wrangler_backend:
     restart: always
@@ -26,10 +26,12 @@ services:
     stdin_open: true
     ports:
       - "9999:9999"
+    environment:
+      LD_LIBRARY_PATH: /app/winstantclient_19_6
     volumes:
       - .:/app
     depends_on:
-      - wrangler_db
+      - wrangler-db
 
 volumes:
   wranglerdata:

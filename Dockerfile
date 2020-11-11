@@ -16,6 +16,8 @@ RUN apk --no-cache add shadow \
     make \
     libtool \
     nasm \
+    libnsl \
+    libaio \
     postgresql-dev \
     python3-dev \
     freetype-dev \
@@ -53,6 +55,10 @@ RUN pip install --no-cache-dir --upgrade pip \
     && wget -O /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 \
     && chmod +x /usr/bin/dumb-init
 
+ADD ./instantclient_19_6/ /usr/local/lib/
+RUN ln -s /usr/lib/libnsl.so.2 /usr/lib/libnsl.so.1
+RUN ln -s /lib/ld-musl-x86_64.so.1  /usr/lib/libresolv.so.2
+RUN ln -s /lib/ld-musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
 RUN chown $USER:$USER .
 USER $USER
 
