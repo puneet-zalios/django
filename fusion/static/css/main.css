@@ -3,6 +3,15 @@ body {
     background-color: #335295;
 }
 
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+table td {
+    word-break: break-word;
+}
+
 div#header {
 }
 
@@ -12,7 +21,7 @@ div#side {
     margin: 0px 1% 0px 1%;
     border: solid red 1px;
     background-color: white;
-    
+
     text-align: center;
     vertical-align: middle;
 }
@@ -40,13 +49,13 @@ div#side ul li a:hover {
 div#main {
     float: right;
     width: 85%;
-    
+
     background-color: white;
     border: solid red 1px;
-    
-    margin: 0px 1% 0px 0%; 
+
+    margin: 0px 1% 0px 0%;
     padding: 10px 0px 10px 15px;
-    
+
     font-family: Arial, sans-serif;
     font-size: 0.85em;
 }
@@ -106,4 +115,19 @@ div#announcement ul li {
     background-image: url('../images/asterisk.png');
     background-position: top left;
     background-repeat: no-repeat;
+}
+
+.outputoptions-header {
+    margin-top: 10px;
+}
+span#outputOptionsToggle {
+    margin-top: 10px;
+}
+
+div#outputoptions {
+    margin: 10px;
+}
+
+div#outputoptions-btns {
+    padding-left: 10px;
 }

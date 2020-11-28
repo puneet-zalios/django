@@ -64,17 +64,17 @@
   }
 
   function selectAllOptions() {
-    jQuery('#outputoptions-parent > input').prop('checked', true);
+    jQuery('#outputoptions-parent input').prop('checked', true);
   }
 
   function selectDefaultOptions() {
-    jQuery('#outputoptions-parent > input').prop('checked', false);
-    jQuery('#outputoptions-parent > input.default').prop(
+    jQuery('#outputoptions-parent input').prop('checked', false);
+    jQuery('#outputoptions-parent input.default').prop(
         'checked', true);
   }
 
   function selectNoOptions() {
-    jQuery('#outputoptions-parent > input').prop('checked', false);
+    jQuery('#outputoptions-parent input').prop('checked', false);
   }
 
   {% if is_refine %}
@@ -119,6 +119,7 @@
   {% else %}
   $j(document).ready(function() {
     addRow();
+    selectDefaultOptions();
   });
   {% endif %}
 </script>
@@ -150,73 +151,126 @@
     <input type="checkbox" name="statistics_only" value="1" />Statistics Only
     <input type="checkbox" name="incident_history" value="1" />Incident History
   </div>
-  <span id="outputOptionsToggle"
+  <div class="outputoptions-header">
+    <span id="outputOptionsToggle"
       onclick="toggleOutputOptions()" >[+]</span> <b>Output Fields</b>
+  </div>
   <div id="outputoptions" style="visibility:hidden">
-    <button id="allbtn" type="button" onclick="selectAllOptions()">All</button>
-    <button id="allbtn" type="button" onclick="selectNoOptions()">None</button>
-    <button id="allbtn" type="button" onclick="selectDefaultOptions()">
-        Default</button>
+    <div id="outputoptions-btns">
+      <button id="allbtn" type="button" onclick="selectAllOptions()">All</button>
+      <button id="allbtn" type="button" onclick="selectNoOptions()">None</button>
+      <button id="allbtn" type="button" onclick="selectDefaultOptions()">
+          Default</button>
+    </div>
     <div id="outputoptions-parent">
-      <input type="checkbox" name="incidentid" value="1" class="default"/>
-        Incident Id
-      <br/>
-      <input type="checkbox" name="incidentcategory" value="1"
-        class="default"/>Incident Category
-      <br/>
-      <input type="checkbox" name="incidenttype" value="1" class="default"/>
-        Incident Type
-      <br/>
-      <input type="checkbox" name="dateoccurred" value="1" class="default"/>
-        Date Occurred
-      <br/>
-      <input type="checkbox" name="updateddate" value="1" class="default"/>
-        Updated Date
-      <br/>
-      <input type="checkbox" name="severity" value="1" class="default"/>
-        Severity
-      <br/>
-      <input type="checkbox" name="city" value="1" class="default"/>City
-      <br/>
-      <input type="checkbox" name="stateprovince" value="1" class="default"/>
-        StateProvince
-      <br/>
-      <input type="checkbox" name="country" value="1" class="default"/>Country
-      <br/>
-      <input type="checkbox" name="gist" value="1" class="default"/>Gist
-      <br/>
-      <input type="checkbox" name="description" value="1" class="default"/>
-        Description
-      <br/>
-      <input type="checkbox" name="infosource" value="1" class="default"/>
-        Info Source
-      <br/>
-      <input type="checkbox" name="infoquality" value="1" class="default"/>
-        Info Quality
-      <br/>
-      <input type="checkbox" name="latitude" value="1" class="default"/>
-        Latitude
-      <br/>
-      <input type="checkbox" name="longitude" value="1" class="default"/>
-        Longitude
-      <br/>
-      <input type="checkbox" name="updatedby" value="1" />Updated By
-      <br/>
-      <input type="checkbox" name="county" value="1" />County
-      <br/>
-      <input type="checkbox" name="street" value="1" />Street
-      <br/>
-      <input type="checkbox" name="postal" value="1" />Zip / Postal Code
-      <br/>
-      <input type="checkbox" name="approximate" value="1" />Approximate
-      <br/>
-      <input type="checkbox" name="commentflag" value="1" />Comment
-      </br>
-      <input type="checkbox" name="conversationlog" value="1" />
-        Conversation Log
-      </br>
-      <input type="checkbox" name="notifyrule" value="1" />Notify
-      </br>
+      <table>
+      <tr>
+        <td>
+          <input type="checkbox" name="incidentid" value="1" class="default"/>
+              Incident Id
+        </td>
+        <td>
+          <input type="checkbox" name="incidentcategory" value="1"
+            class="default"/>
+              Incident Category
+        </td>
+        <td>
+          <input type="checkbox" name="incidenttype" value="1" class="default"/>
+              Incident Type
+        </td>
+        <td>
+          <input type="checkbox" name="dateoccurred" value="1" class="default"/>
+              Date Occurred
+        </td>
+        <td>
+          <input type="checkbox" name="updateddate" value="1" class="default"/>
+              Updated Date
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="checkbox" name="severity" value="1" class="default"/>
+              Severity
+        </td>
+        <td>
+          <input type="checkbox" name="city" value="1" class="default"/>
+              City
+        </td>
+        <td>
+          <input type="checkbox" name="stateprovince" value="1" class="default"/>
+              StateProvince
+        </td>
+        <td>
+          <input type="checkbox" name="country" value="1" class="default"/>
+              Country
+        </td>
+        <td>
+          <input type="checkbox" name="gist" value="1" class="default"/>
+              Gist
+        </td>
+      <tr>
+        <td>
+          <input type="checkbox" name="description" value="1" class="default"/>
+              Description
+        </td>
+        <td>
+          <input type="checkbox" name="infosource" value="1" class="default"/>
+              Info Source
+        </td>
+        <td>
+          <input type="checkbox" name="infoquality" value="1" class="default"/>
+              Info Quality
+        </td>
+        <td>
+          <input type="checkbox" name="latitude" value="1" class="default"/>
+              Latitude
+        </td>
+        <td>
+          <input type="checkbox" name="longitude" value="1" class="default"/>
+              Longitude
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="checkbox" name="updatedby" value="1" />
+              Updated By
+        </td>
+        <td>
+          <input type="checkbox" name="county" value="1" />
+              County
+        </td>
+        <td>
+          <input type="checkbox" name="street" value="1" />
+              Street
+        </td>
+        <td>
+          <input type="checkbox" name="postal" value="1" />
+              Zip / Postal Code
+        </td>
+        <td>
+          <input type="checkbox" name="approximate" value="1" />
+              Approximate
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="checkbox" name="commentflag" value="1" />
+              Comment
+        </td>
+        <td>
+          <input type="checkbox" name="conversationlog" value="1" />
+              Conversation Log
+        </td>
+        <td>
+          <input type="checkbox" name="notifyrule" value="1" />
+              Notify
+        </td>
+        <td>
+          <input type="checkbox" name="itemevent" value="1" class="default" />
+              Special Event
+        </td>
+      </tr>
+      </table>
     </div>
   </div>
 </form>
