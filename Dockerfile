@@ -18,7 +18,6 @@ RUN apk --no-cache add shadow \
     nasm \
     libnsl \
     libaio \
-    postgresql-dev \
     python3-dev \
     freetype-dev \
     libffi-dev \
@@ -26,8 +25,6 @@ RUN apk --no-cache add shadow \
     tiff-dev \
     tk-dev \
     tcl-dev \
-    postgresql \
-    postgresql-dev \
     jpeg \
     jpeg-dev \
     zlib \
