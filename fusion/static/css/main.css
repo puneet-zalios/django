@@ -3,12 +3,12 @@ body {
     background-color: #335295;
 }
 
-table {
+#outputoptions table {
     table-layout: fixed;
     width: 100%;
 }
 
-table td {
+#outputoptions table td {
     word-break: break-word;
 }
 
