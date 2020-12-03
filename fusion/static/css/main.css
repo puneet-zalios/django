@@ -12,6 +12,10 @@ body {
     word-break: break-word;
 }
 
+div#results {
+    overflow-x: auto;
+}
+
 div#header {
 }
 

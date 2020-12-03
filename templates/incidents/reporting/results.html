@@ -33,6 +33,7 @@ $j(document).ready(function() {
   <dt>Total Incidents</dt><dd>{{ total_incidents }}</dd>
   <dt>Total Reports</dt><dd>{{ total_rows }}</dd>
 </dl>
+<div id="results">
 <table>
 {% if objs %}
 <tr>
@@ -225,4 +226,5 @@ $j(document).ready(function() {
 {% endfor %}
 {% endif %}
 </table>
+</div>
 {% endblock content %}
