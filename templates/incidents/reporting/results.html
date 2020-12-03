@@ -191,9 +191,9 @@ $j(document).ready(function() {
   <td>{{ row.postal }}</td>
   {% endif %}
 
-  {% if request.POST.approximate %}
+  {% if request.POST.approximate and request.POST.approximate == True %}
   <td>Y</td>
-  {% else %}
+  {% elif request.POST.approximate and request.POST.approximate == False %}
   <td>N</td>
   {% endif %}
 
