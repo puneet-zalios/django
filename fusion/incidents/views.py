@@ -627,13 +627,21 @@ def csv_out(req):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
     writer = csv.writer(response)
-    writer.writerow(cols)
+    header = []
+    for col in cols:
+        if col in req.POST:
+            header.append(col)
+    writer.writerow(header)
     objs, query = getObjects(req.POST, cols)
     latest_inc = None
     total_rows = 0
     total_incidents = 0
     for obj in objs:
-        writer.writerow([obj[i] for i in cols])
+        row = []
+        for col in cols:
+            if col in req.POST:
+                row.append(obj[col])
+        writer.writerow(row)
         if latest_inc != obj['incidentid']:
             latest_inc = obj['incidentid']
             total_incidents += 1
