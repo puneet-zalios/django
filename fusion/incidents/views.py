@@ -630,7 +630,10 @@ def csv_out(req):
     header = []
     for col in cols:
         if col in req.POST:
-            header.append(col)
+            if col == 'program':
+                header.append('Special Event')
+            else:
+                header.append(col)
     writer.writerow(header)
     objs, query = getObjects(req.POST, cols)
     latest_inc = None
