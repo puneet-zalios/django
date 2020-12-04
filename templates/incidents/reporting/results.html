@@ -109,6 +109,7 @@ $j(document).ready(function() {
     {% if request.POST.program %}
     <th>Special Event</th>
     {% endif %}
+    <th>Detail</th>
 </tr>
 {% for row in objs %}
 <tr
@@ -172,15 +173,15 @@ $j(document).ready(function() {
   {% endif %}
 
   {% if request.POST.longitude %}
-  <td>{{ row.latitude }}</td>
-  {% endif %}
-
-  {% if request.POST.updatedby %}
-  <td>{{ row.updatedby }}</td>
+  <td>{{ row.longitude }}</td>
   {% endif %}
 
   {% if request.POST.county %}
   <td>{{ row.county }}</td>
+  {% endif %}
+
+  {% if request.POST.updatedby %}
+  <td>{{ row.updatedby }}</td>
   {% endif %}
 
   {% if request.POST.street %}
@@ -190,11 +191,14 @@ $j(document).ready(function() {
   {% if request.POST.postal %}
   <td>{{ row.postal }}</td>
   {% endif %}
-
-  {% if request.POST.approximate and request.POST.approximate == True %}
-  <td>Y</td>
-  {% elif request.POST.approximate and request.POST.approximate == False %}
-  <td>N</td>
+  
+  {% if request.POST.approximate %}
+    {% ifequal row.approximate 1 %}
+    <td>Yes</td>
+    {% endifequal %}
+    {% ifequal row.approximate 0 %}
+    <td>No</td>
+    {% endifequal %}
   {% endif %}
 
   {% if request.POST.commentflag %}
