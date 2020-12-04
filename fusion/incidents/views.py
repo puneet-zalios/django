@@ -101,7 +101,7 @@ latest_cols = [
     'updateddate',  'severity',  'city', 'stateprovince',  'country',  'gist',
     'latitude',  'longitude', 'dateoccurred', 'description', 'infosource',
     'infoquality', 'county', 'updatedby', 'street', 'postal', 'approximate',
-    'commentflag', 'conversationlog', 'notifyrule',
+    'commentflag', 'conversationlog', 'notifyrule', 'program'
 ]
 
 vw_cols = [

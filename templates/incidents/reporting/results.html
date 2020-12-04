@@ -106,7 +106,7 @@ $j(document).ready(function() {
     {% if request.POST.notifyrule %}
     <th>Notifications</th>
     {% endif %}
-    {% if request.POST.itemevent %}
+    {% if request.POST.program %}
     <th>Special Event</th>
     {% endif %}
 </tr>
@@ -209,8 +209,8 @@ $j(document).ready(function() {
   <td>{{ row.notifyrule }}</td>
   {% endif %}
 
-  {% if request.POST.itemevent %}
-  <td>{{ row.itemevent}}</td>
+  {% if request.POST.program %}
+  <td>{{ row.program }}</td>
   {% endif %}
 
   <td>
